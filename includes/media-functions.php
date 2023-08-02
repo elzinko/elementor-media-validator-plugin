@@ -29,3 +29,25 @@ function get_media_info()
 
     return $media_info;
 }
+
+
+function get_image_source($image_url)
+{
+    // Extrait le nom du fichier de l'URL de l'image.
+    $filename = basename($image_url);
+
+    // Utilisez une expression régulière pour extraire le nom du site et le numéro de l'image.
+    if (preg_match('/^([a-z]+)-(\d+)-\d+x\d+\.\w+$/', $filename, $matches)) {
+        // Construit l'URL de la source de l'image.
+        $source_url = sprintf('https://www.%s.com/fr/search/2/image?family=phrase=%s', $matches[1], $matches[2]);
+
+        // Renvoie le nom du site et l'URL de la source.
+        return array(
+            'site' => $matches[1],
+            'url' => $source_url,
+        );
+    }
+
+    // Si le nom du fichier ne correspond pas au format attendu, renvoie un tableau vide.
+    return array();
+}

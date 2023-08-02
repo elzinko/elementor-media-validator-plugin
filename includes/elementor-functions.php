@@ -59,12 +59,21 @@ function find_images_in_section($section)
             $metadata = wp_get_attachment_metadata($image_id);
 
             // Ajoutez les informations sur l'image au tableau.
+
+            $description = get_post_field('post_content', $image_id);
+            if (mb_strlen($description) > 30) {
+                $description = mb_substr($description, 0, 30);
+                $description .= "...";
+            }
+
             $images[] = array(
                 'url' => $element['settings']['image']['url'],
-                'description' => wp_get_attachment_caption($image_id), // Récupérez la légende de l'image en tant que description.
+                // 'description' => wp_get_attachment_caption($image_id), // description de l'image mais pas celle saisie lors de l'ajout de l'image
+                'description' => $description, // Récupérez la légende de l'image en tant que description.
                 'format' => pathinfo($element['settings']['image']['url'], PATHINFO_EXTENSION), // Récupérez le format de l'image à partir de son URL.
                 'dimensions' => "{$metadata['width']}x{$metadata['height']}", // Récupérez les dimensions de l'image à partir des métadonnées.
                 'id' => $element['id'], // Vous pouvez utiliser cet ID pour créer une ancre.
+                'id_wp' => $image_id // Vous pouvez utiliser cet ID pour obtenir l'image à l'aide de wp_get_attachment_image().
             );
         }
 
@@ -77,8 +86,6 @@ function find_images_in_section($section)
     return $images;
 }
 
-
-
 /**
  * Get name of a section
  * 1 - get H1 of section if name and css id not found
@@ -90,6 +97,11 @@ function find_images_in_section($section)
  */
 function get_bloc_name_from_section($section): String
 {
+    $anchor_name = find_anchor_recursive($section);
+    if (!empty($anchor_name)) {
+        return $anchor_name;
+    }
+
     // Parcourir les éléments de la section
     foreach ($section['elements'] as $element) {
         // Vérifier si l'élément est un widget de type heading de taille h1
@@ -108,6 +120,41 @@ function get_bloc_name_from_section($section): String
         return $section['settings']['_element_id'];
     }
 
+
+
     // Si aucune des conditions ci-dessus n'est remplie, renvoyer 'A DEFINIR'
     return 'A DEFINIR';
+}
+
+function find_anchor_recursive($array)
+{
+    foreach ($array as $key => $value) {
+        if (is_array($value)) {
+            $result = find_anchor_recursive($value);
+            if ($result) return $result;
+        } else {
+            if ($key == 'widgetType' && $value == 'menu-anchor') {
+                $anchor = $array['settings']['anchor'] ?? null;
+                if (!empty($anchor)) return $anchor;
+            }
+        }
+    }
+    return null;
+}
+
+function get_url_for_section($section)
+{
+    $base_url = get_site_url(); // récupère l'URL de base du site
+
+    // Rechercher récursivement l'ancre
+    $anchor = find_anchor_recursive($section);
+
+    if ($anchor) {
+        // Construire le lien d'ancre
+        $anchor_link = $base_url . '#' . $anchor;
+        return $anchor_link;
+    }
+
+    // Si aucun menu-anchor avec un anchor n'a été trouvé, retourner null
+    return null;
 }
