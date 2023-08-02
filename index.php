@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin Name: Media Info Tracker
+ * Plugin Name: Elementor Media Validation Plugin
  * Description: Ce plugin récupère les url des médias pour chaque page et crée un tableau avec la liste des médias, leur url et un indicateur pour savoir s'ils ont été validés.
  * Version: 1.0
  * Author: Thomas Couderc
@@ -11,6 +11,10 @@
 include(plugin_dir_path(__FILE__) . 'includes/media-functions.php');
 include(plugin_dir_path(__FILE__) . 'includes/elementor-functions.php');
 include(plugin_dir_path(__FILE__) . 'admin/admin-page.php');
+
+
+// Définissez la constante PLUGIN_DEBUG sur true pour activer le débogage.
+define('PLUGIN_DEBUG', false);
 
 
 // Elementor plugin installation check 

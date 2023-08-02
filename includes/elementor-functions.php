@@ -28,11 +28,13 @@ function get_elementor_data($post_id)
 
     $my_plugin_folder = WP_PLUGIN_DIR . '/elementor-media-validation-plugin';
 
-    if (is_dir($my_plugin_folder)) {
-        file_put_contents($my_plugin_folder . "/samples/accueil.json", $elementor_data);
-        echo '<div>';
-        echo $elementor_data;
-        echo '</div>';
+    if (PLUGIN_DEBUG == true) {
+        if (is_dir($my_plugin_folder)) {
+            file_put_contents($my_plugin_folder . "/samples/accueil.json", $elementor_data);
+            echo '<div>';
+            echo $elementor_data;
+            echo '</div>';
+        }
     }
 
 
@@ -73,9 +75,9 @@ function find_images_in_section($section)
  * 3 - if anything found set name to "A DEFINIR" 
  *
  * @param [type] $section
- * @return void
+ * @return string name of section
  */
-function get_bloc_name_from_section($section)
+function get_bloc_name_from_section($section): String
 {
     // Parcourir les éléments de la section
     foreach ($section['elements'] as $element) {
