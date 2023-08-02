@@ -54,6 +54,8 @@ function display_media_info_page()
                 echo '<td>' . esc_html($media_info['page']) . '</td>';
                 echo '<td>' . esc_html($media_info['bloc']) . '</td>';
                 echo '<td><a href="' . esc_url($media_info['url']) . '">' . esc_html($media_info['url']) . '</a></td>';
+                echo '<td>' . esc_html($image['format']) . '</td>';
+                echo '<td><a href="' . esc_url($image['url']) . '">' . esc_html($image['description']) . '</a></td>';
                 echo '<td>' . esc_html($media_info['provenance']) . '</td>';
                 echo '</tr>';
             }

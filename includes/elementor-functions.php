@@ -52,8 +52,18 @@ function find_images_in_section($section)
     foreach ($section['elements'] as $element) {
         // Vérifiez si l'élément est un widget et si son type est 'image'.
         if ($element['elType'] === 'widget' && $element['widgetType'] === 'image') {
+            // Récupérez l'ID de l'image de la bibliothèque des médias WordPress.
+            $image_id = $element['settings']['image']['id'];
+
+            // Obtenez les métadonnées de l'image.
+            $metadata = wp_get_attachment_metadata($image_id);
+
+            // Ajoutez les informations sur l'image au tableau.
             $images[] = array(
                 'url' => $element['settings']['image']['url'],
+                'description' => wp_get_attachment_caption($image_id), // Récupérez la légende de l'image en tant que description.
+                'format' => pathinfo($element['settings']['image']['url'], PATHINFO_EXTENSION), // Récupérez le format de l'image à partir de son URL.
+                'dimensions' => "{$metadata['width']}x{$metadata['height']}", // Récupérez les dimensions de l'image à partir des métadonnées.
                 'id' => $element['id'], // Vous pouvez utiliser cet ID pour créer une ancre.
             );
         }
@@ -66,6 +76,7 @@ function find_images_in_section($section)
 
     return $images;
 }
+
 
 
 /**
