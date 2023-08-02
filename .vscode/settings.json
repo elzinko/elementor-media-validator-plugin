@@ -1,14 +1,3 @@
-# TL;TR
-
-This is a wordpress Elementor media validation plugin
-
-## Install
-
-### vscode
-
-Update .vscode/settings.json with :
-
-```
 {
     "intelephense.files.maxSize": 3000000,
     "intelephense.stubs": [
@@ -86,22 +75,3 @@ Update .vscode/settings.json with :
         "wordpress"
     ]
 }
-```
-
-### wordpress stub
-
-This [project](https://github.com/php-stubs/wordpress-stubs) provides stub declarations for WordPress core functions, classes and interfaces . Needed for plugin development.
-
-```bash
-composer require --dev php-stubs/wordpress-stubs
-```
-
-### Elementor plugin
-
-Check [configuration page](https://developers.elementor.com/docs/cli/composer/#install-elementor) for installation.
-
-Please use Local console for Elementor plugin activation because wp-cli is mandatory :
-
-```bash
-wp plugin activate elementor
-```
