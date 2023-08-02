@@ -7,7 +7,7 @@
 
 function media_info_admin_page()
 {
-    add_menu_page('Media Info Tracker', 'Media Info', 'manage_options', 'media-info-tracker', 'display_media_info_page');
+    add_menu_page('Media Validator', 'Media Validator', 'manage_options', 'media-info-tracker', 'display_media_info_page');
 }
 
 add_action('admin_menu', 'media_info_admin_page');
@@ -18,10 +18,9 @@ function display_media_info_page()
 
     $elementor_pages = get_elementor_posts();
 
-    echo '<h1>Elementor media</h1>';
+    echo '<h1>Elementor Media Validation Plugin</h1>';
     echo '<table>';
 
-    // En-têtes du tableau
     echo '<thead>';
     echo '<tr>';
     echo '<th>Page</th>';
@@ -31,24 +30,18 @@ function display_media_info_page()
     echo '</tr>';
     echo '</thead>';
 
-    // Corps du tableau
     echo '<tbody>';
     foreach ($elementor_pages as $page) {
 
         $elementor_page_data = get_elementor_data($page->ID);
 
-
-
         foreach ($elementor_page_data as $section) {
-
 
             $bloc_name = get_bloc_name_from_section($section);
 
             $images = find_images_in_section($section);
 
             foreach ($images as $image) {
-
-                // $bloc = find_bloc_name_around_image($elementor_page_data, $image);
 
                 $media_info = array(
                     'page' => $page->post_title,
@@ -68,7 +61,6 @@ function display_media_info_page()
     }
     echo '</tbody>';
 
-    // Fin du tableau
     echo '</table>';
 
 
