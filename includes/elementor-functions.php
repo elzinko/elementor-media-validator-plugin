@@ -42,14 +42,14 @@ function get_elementor_data($post_id)
     return $elementor_data;
 }
 
-function find_images_in_elementor_data($elementor_data)
+function find_images_in_section($section)
 {
     $images = array();
 
-    // Parcourez les données pour trouver les blocs avec des images.
-    foreach ($elementor_data as $element) {
+    // Parcourez les éléments de la section pour trouver les widgets avec des images.
+    foreach ($section['elements'] as $element) {
         // Vérifiez si l'élément est un widget et si son type est 'image'.
-        if (isset($element['widgetType']) && $element['widgetType'] === 'image') {
+        if ($element['elType'] === 'widget' && $element['widgetType'] === 'image') {
             $images[] = array(
                 'url' => $element['settings']['image']['url'],
                 'id' => $element['id'], // Vous pouvez utiliser cet ID pour créer une ancre.
@@ -58,32 +58,43 @@ function find_images_in_elementor_data($elementor_data)
 
         // Si l'élément a des enfants, recherchez les images dans ces enfants.
         if (!empty($element['elements'])) {
-            $images = array_merge($images, find_images_in_elementor_data($element['elements']));
+            $images = array_merge($images, find_images_in_section($element));
         }
     }
 
     return $images;
 }
 
-function findParentBlock($elements, $title = "A DEFINIR", $css_id = "A DEFINIR")
+
+/**
+ * Get name of a section
+ * 1 - get H1 of section if name and css id not found
+ * 2 - get css id of section if name not found
+ * 3 - if anything found set name to "A DEFINIR" 
+ *
+ * @param [type] $section
+ * @return void
+ */
+function get_bloc_name_from_section($section)
 {
-    foreach ($elements as $element) {
-        if ($element['elType'] === 'widget' && isset($element['widgetType']) && $element['widgetType'] === 'heading' && isset($element['settings']['title'])) {
-            $title = $element['settings']['title']; // On récupère le titre du bloc si il existe
-        }
-
-        if ($element['elType'] === 'section' && isset($element['settings']['_element_id'])) {
-            $css_id = $element['settings']['_element_id']; // On récupère l'ID du CSS du bloc si il existe
-        }
-
-        if ($element['elType'] === 'widget' && isset($element['widgetType']) && $element['widgetType'] === 'image') {
-            $image_id = $element['id'];
-            $image_title = isset($element['settings']['image']['alt']) ? $element['settings']['image']['alt'] : "Non défini";
-            echo "Pour l'image avec l'ID: $image_id et le titre: $image_title, le bloc est : $title ($css_id)\n"; // Affiche le nom du bloc
-        }
-
-        if (!empty($element['elements'])) {
-            findParentBlock($element['elements'], $title, $css_id); // Si l'élément a des sous-éléments, on répète la fonction avec les mêmes paramètres
+    // Parcourir les éléments de la section
+    foreach ($section['elements'] as $element) {
+        // Vérifier si l'élément est un widget de type heading de taille h1
+        if (
+            $element['elType'] === 'widget' &&
+            $element['widgetType'] === 'heading' &&
+            $element['settings']['header_size'] === 'h1'
+        ) {
+            // Renvoyer le titre du widget
+            return $element['settings']['title'];
         }
     }
+
+    // Si aucun widget heading de taille h1 n'a été trouvé, utiliser l'ID CSS de la section (si disponible)
+    if (!empty($section['settings']['_element_id'])) {
+        return $section['settings']['_element_id'];
+    }
+
+    // Si aucune des conditions ci-dessus n'est remplie, renvoyer 'A DEFINIR'
+    return 'A DEFINIR';
 }

@@ -16,7 +16,7 @@ add_action('admin_menu', 'media_info_admin_page');
 function display_media_info_page()
 {
 
-    $elementor_posts = get_elementor_posts();
+    $elementor_pages = get_elementor_posts();
 
     echo '<h1>Elementor media</h1>';
     echo '<table>';
@@ -33,23 +33,37 @@ function display_media_info_page()
 
     // Corps du tableau
     echo '<tbody>';
-    foreach ($elementor_posts as $post) {
-        $elementor_data = get_elementor_data($post->ID);
-        $images = find_images_in_elementor_data($elementor_data);
-        foreach ($images as $image) {
-            $media_info = array(
-                'page' => $post->post_title,
-                'bloc' => $image['id'],
-                'url' => $image['url'],
-                'provenance' => 'Elementor'
-            );
+    foreach ($elementor_pages as $page) {
 
-            echo '<tr>';
-            echo '<td>' . esc_html($media_info['page']) . '</td>';
-            echo '<td>' . esc_html($media_info['bloc']) . '</td>';
-            echo '<td><a href="' . esc_url($media_info['url']) . '">' . esc_html($media_info['url']) . '</a></td>';
-            echo '<td>' . esc_html($media_info['provenance']) . '</td>';
-            echo '</tr>';
+        $elementor_page_data = get_elementor_data($page->ID);
+
+
+
+        foreach ($elementor_page_data as $section) {
+
+
+            $bloc_name = get_bloc_name_from_section($section);
+
+            $images = find_images_in_section($section);
+
+            foreach ($images as $image) {
+
+                // $bloc = find_bloc_name_around_image($elementor_page_data, $image);
+
+                $media_info = array(
+                    'page' => $page->post_title,
+                    'bloc' => $bloc_name,
+                    'url' => $image['url'],
+                    'provenance' => 'Elementor'
+                );
+
+                echo '<tr>';
+                echo '<td>' . esc_html($media_info['page']) . '</td>';
+                echo '<td>' . esc_html($media_info['bloc']) . '</td>';
+                echo '<td><a href="' . esc_url($media_info['url']) . '">' . esc_html($media_info['url']) . '</a></td>';
+                echo '<td>' . esc_html($media_info['provenance']) . '</td>';
+                echo '</tr>';
+            }
         }
     }
     echo '</tbody>';
@@ -58,34 +72,5 @@ function display_media_info_page()
     echo '</table>';
 
 
-    $media_info = get_media_info();
-
-
-    echo '<h1>All media</h1>';
-    echo '<table>';
-
-    // En-têtes du tableau
-    echo '<thead>';
-    echo '<tr>';
-    echo '<th>Page</th>';
-    echo '<th>Bloc</th>';
-    echo '<th>URL</th>';
-    echo '<th>Provenance</th>';
-    echo '</tr>';
-    echo '</thead>';
-
-    // Corps du tableau
-    echo '<tbody>';
-    foreach ($media_info as $info) {
-        echo '<tr>';
-        echo '<td>' . esc_html($info['page']) . '</td>';
-        echo '<td>' . esc_html($info['bloc']) . '</td>';
-        echo '<td><a href="' . esc_url($info['url']) . '">' . esc_html($info['url']) . '</a></td>';
-        echo '<td>' . esc_html($info['provenance']) . '</td>';
-        echo '</tr>';
-    }
-    echo '</tbody>';
-
-    // Fin du tableau
-    echo '</table>';
+    // show_all_wp_media();
 }
