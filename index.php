@@ -8,6 +8,11 @@
  */
 
 
+include(plugin_dir_path(__FILE__) . 'includes/media-functions.php');
+include(plugin_dir_path(__FILE__) . 'includes/elementor-functions.php');
+include(plugin_dir_path(__FILE__) . 'admin/admin-page.php');
+
+
 // Elementor plugin installation check 
 
 register_activation_hook(__FILE__, 'media_info_tracker_activation');
