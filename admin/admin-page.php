@@ -21,6 +21,6 @@ function media_list_init()
 // Adding menu
 function my_add_menu_items()
 {
-    add_menu_page('Media List Table', 'Media List Table', 'activate_plugins', 'media-info-tracker', 'media_list_init');
+    add_menu_page('Media validator', 'Media List Table', 'activate_plugins', 'media-info-tracker', 'media_list_init');
 }
 add_action('admin_menu', 'my_add_menu_items');
