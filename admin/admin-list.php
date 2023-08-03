@@ -26,8 +26,9 @@ class Media_List_Table extends WP_List_Table
             'format' => 'Format',
             'description' => 'Description',
             'dimentions' => 'Dimentions',
-            'source_url' => 'Source URL',
-            'source_site' => 'Source Site',
+            'credit' => 'Credit',
+            'source' => 'Source',
+            'file' => 'File',
             'thumbnail' => 'Thumbnail',
         );
         return $columns;

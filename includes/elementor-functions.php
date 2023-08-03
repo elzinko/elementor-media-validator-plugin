@@ -59,39 +59,31 @@ function find_images_in_section($section): mixed
     foreach ($section['elements'] as $element) {
         // Check if the element is a widget and if it's an image widget.
         if ($element['elType'] === 'widget' && $element['widgetType'] === 'image') {
+            $id = $element['id'];
             $image_id = $element['settings']['image']['id'];
             $url = $element['settings']['image']['url'];
             $metadata = wp_get_attachment_metadata($image_id);
-
-            // description
+            $filename = $metadata['file'];
             $description = get_post_field('post_content', $image_id);
-
-            // source
-            $source = get_image_source($url);
-            // TODO move next 2 lines in get_image_source
-            $source_url = !empty($source['url']) ? esc_url($source['url']) : 'Unknown';
-            $source_site = !empty($source['site']) ? esc_html($source['site']) : 'Unknown';
-
-            // edit url
             $edit_url = "https://media-plugin.local/wp-admin/upload.php?item={$image_id}";
-
-            // thumbnail
+            $credit = get_image_credit($metadata);
+            $source = get_image_source($metadata['file']);
             $thumbnail = wp_get_attachment_image($image_id, 'thumbnail');
 
-
+            // Add the image to the array.
             $images[] = array(
                 'id_wp' => $image_id,
-                'id' => $element['id'],
-                'url' => $element['settings']['image']['url'],
-                'file' => $metadata['file'],
+                'id' => $id,
+                'url' => $url,
+                'file' => $filename,
                 'description' => $description,
+                'edit_url' => $edit_url,
+                'credit' => $credit,
+                'source_url' => $source['url'],
+                'source_site' => $source['site'],
+                'thumbnail' => $thumbnail,
                 'format' => pathinfo($element['settings']['image']['url'], PATHINFO_EXTENSION),
                 'dimensions' => "{$metadata['width']}x{$metadata['height']}",
-                'credit' => get_image_credit($metadata),
-                'source_url' => $source_url,
-                'source_site' => $source_site,
-                'thumbnail' => $thumbnail,
-                'edit_url' => $edit_url,
 
             );
         }
@@ -106,29 +98,8 @@ function find_images_in_section($section): mixed
 }
 
 
-function get_image_credit($metadata)
-{
-    $credits = $metadata['image_meta']['credit'];
-    $file = $metadata['file'];
-
-    if (!empty($credit)) {
-        switch ($credit) {
-            case 'get image':
-                return 'gettyimage';
-            case 'shutterstock':
-                return 'shutterstock';
-        }
-    } else if (!empty($file)) {
-        if (strpos($file, 'gettyimage') !== false) {
-            return 'gettyimage';
-        } else if (strpos($file, 'shutterstock') !== false) {
-            return 'shutterstock';
-        }
-    }
-}
-
 /**
- * Get name of a section
+ * Build name of a section
  * 1 - get H1 of section if name and css id not found
  * 2 - get css id of section if name not found
  * 3 - if anything found set name to "A DEFINIR" 
@@ -136,7 +107,7 @@ function get_image_credit($metadata)
  * @param [type] $section
  * @return string name of section
  */
-function get_bloc_name_from_section($section): String
+function build_section_name($section): string|null
 {
     $anchor_name = find_anchor_recursive($section);
     if (!empty($anchor_name)) {
@@ -167,7 +138,13 @@ function get_bloc_name_from_section($section): String
     return 'A DEFINIR';
 }
 
-function find_anchor_recursive($array)
+/**
+ * Find anchor recursively in section.
+ *
+ * @param [type] $array
+ * @return string
+ */
+function find_anchor_recursive($array): string|null
 {
     foreach ($array as $key => $value) {
         if (is_array($value)) {
@@ -183,19 +160,25 @@ function find_anchor_recursive($array)
     return null;
 }
 
-function get_url_for_section($section)
+/**
+ * Get url for section. The url is build using the first anchor found in the section
+ *
+ * @param [type] $section
+ * @return string|null
+ */
+function build_section_url($section): string|null
 {
-    $base_url = get_site_url(); // récupère l'URL de base du site
+    $base_url = get_site_url();
 
-    // Rechercher récursivement l'ancre
+    // Find the anchor recursively
     $anchor = find_anchor_recursive($section);
 
     if ($anchor) {
-        // Construire le lien d'ancre
+        // Build the anchor link
         $anchor_link = $base_url . '#' . $anchor;
         return $anchor_link;
     }
 
-    // Si aucun menu-anchor avec un anchor n'a été trouvé, retourner null
+    // Otherwise, return null
     return null;
 }

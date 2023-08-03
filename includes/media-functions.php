@@ -12,11 +12,12 @@ function build_media_data()
         foreach ($elementor_page_data as $section) {
 
             // bloc
-            $bloc_name = get_bloc_name_from_section($section);
-            $bloc_url = get_url_for_section($section);
+            $bloc_name = build_section_name($section);
+            $bloc_url = build_section_url($section);
 
             // images
             $images = find_images_in_section($section);
+
             foreach ($images as $image) {
 
                 // page
@@ -31,13 +32,19 @@ function build_media_data()
 
                 // description
                 $description = $image['description'];
-                if (empty($image['description'])) {
-                    $description = "<a href='{$image['edit_url']}'>Click to add description</a>";
+                if (empty($description)) {
+                    $description = "<a href='{$image['edit_url']}'>add description</a>";
                 } else {
                     if (mb_strlen($description) > 30) {
-                        $description = mb_substr($description, 0, 30);
-                        $description .= "...";
+                        $description = mb_substr($description, 0, 30) . "...";
                     }
+                    $description = "<a href='{$image['edit_url']}'>$description</a>";
+                }
+
+                // credit
+                $credit = $image['credit'];
+                if ($credit == null) {
+                    $credit = "No credit";
                 }
 
                 // thumbnail
@@ -48,15 +55,24 @@ function build_media_data()
                     $thumbnail = "<a href='" . $image['url'] . "'>" . $image['thumbnail'] . "</a>";
                 }
 
+                // source
+                $source = $image['source_site'];
+                if (empty($source)) {
+                    $source = "<a href='{$image['edit_url']}'>add source</a>";
+                } else {
+                    $source = "<a href='{$image['source_url']}'>$source</a>";
+                }
+
                 $media_list[] = [
                     'page' => $page_name,
                     'bloc' => $bloc,
                     'format' => $image['format'],
                     'description' => $description,
                     'dimentions' => $image['dimensions'],
-                    'source_url' => $image['source_url'],
-                    'source_site' => $image['source_site'],
+                    'source' => $source,
+                    'credit' => $credit,
                     'thumbnail' => $thumbnail,
+                    'file' => $image['file'],
                 ];
             }
         }
@@ -65,9 +81,12 @@ function build_media_data()
     return $media_list;
 }
 
-
-// Obtenir les informations des médias
-function get_media_info()
+/**
+ * Get all wordpress pages media data
+ *
+ * @return array All wordpress pages media data
+ */
+function get_wp_media_info(): array
 {
 
     global $wpdb;
@@ -95,35 +114,66 @@ function get_media_info()
 }
 
 
-function get_image_source($image_url)
+/**
+ * Retrieve image source from filename
+ *
+ * @param string $filename image filename
+ * @return array ['site' => 'sitename', 'url' => 'site_image_url',]
+ */
+function get_image_source($filename): array
 {
-    // Extrait le nom du fichier de l'URL de l'image.
-    $filename = basename($image_url);
 
-    // Utilisez une expression régulière pour extraire le nom du site et le numéro de l'image pour iStockphoto.
-    if (preg_match('/^([a-z]+)-(\d+)-\d+x\d+\.\w+$/', $filename, $matches)) {
-        // Construit l'URL de la source de l'image.
-        $source_url = sprintf('https://www.%s.com/fr/search/2/image?family=phrase=%s', $matches[1], $matches[2]);
+    if (!empty($filename)) {
+        // istockphoto
+        if (strpos($filename, 'istockphoto') !== false) {
+            if (preg_match('/istockphoto-(\d+)-/', $filename, $matches)) {
+                return array(
+                    'site' => 'istockphoto',
+                    'url' => build_istockphoto_url($matches[1]),
+                );
+            }
+        }
+        // gettyimages
+        else if (strpos($filename, 'gettyimages') !== false) {
 
-        // Renvoie le nom du site et l'URL de la source.
-        return array(
-            'site' => $matches[1],
-            'url' => $source_url,
-        );
+            if (preg_match('/gettyimages-(\d+)-/', $filename, $matches)) {
+                return array(
+                    'site' => 'gettyimages',
+                    'url' => build_gettyimage_url($matches[1]),
+                );
+            }
+        }
     }
+    return array(
+        'site' => null,
+        'url' => null,
+    );
+}
 
-    // Utilisez une expression régulière pour extraire le numéro de l'image pour Envato.
-    if (preg_match('/^([a-z-]+)-(\d{6})\w\.\w+$/', $filename, $matches)) {
-        // Construit l'URL de la source de l'image.
-        $source_url = sprintf('https://elements.envato.com/elements-api/items/%s.json?languageCode=fr', $matches[2]);
 
-        // Renvoie le nom du site et l'URL de la source.
-        return array(
-            'site' => 'envato',
-            'url' => $source_url,
-        );
-    }
+function get_image_credit($metadata)
+{
+    return $metadata['image_meta']['credit'];
+}
 
-    // Si le nom du fichier ne correspond pas à l'un des formats attendus, renvoie un tableau vide.
-    return array();
+/**
+ * Build istockphoto url from image id
+ *
+ * @param [type] $image_id
+ * @return string istockphoto url
+ */
+function build_istockphoto_url($image_id): string
+{
+    return "https://www.istockphoto.com/fr/search/2/image?phrase=$image_id";
+}
+
+/**
+ * Build Getty Images url from image id
+ *
+ * @param [type] $image_id
+ * @return string gettyimages url
+ */
+function build_gettyimage_url($image_id): string
+{
+    return "https://www.gettyimages.fr/search/2/image?phrase=$image_id";
 }
