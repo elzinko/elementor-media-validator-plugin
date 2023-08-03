@@ -10,12 +10,13 @@ Check [install](./doc/INSTALL.md) document.
 
 ### Images
 
-- [ ] add istockphoto image gettyimages
+- [ ] add istockphoto image handling
 - [ ] add agency image handling
 - [ ] add icon handling
 - [ ] add Envato image handling
 - [ ] add theme image handling
 - [ ] add shutterstock image handling
+- [ ] add gettyimages image handling
 - [ ] add freepik image handling
 - [ ] add unsplash image handling
 
