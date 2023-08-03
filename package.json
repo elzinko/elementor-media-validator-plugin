@@ -1,0 +1,22 @@
+{
+  "name": "elementor-media-validation-plugin",
+  "version": "1.0.0",
+  "description": "Elementor media validation plugin",
+  "author": "Thomas Couderc",
+  "license": "See license in LICENSE",
+  "keywords": [
+    "WordPress",
+    "Elementor",
+    "plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elzinko/elementor-media-validation-plugin.git"
+  },
+  "devDependencies": {
+    "dir-archiver": "2.1.0"
+  },
+  "scripts": {
+    "bundle": "dir-archiver --src . --dest ./dist/$npm_package_name-$npm_package_version-$(date +%Y%m%d%H%M%S).zip --exclude .DS_Store .git .gitattributes .github .gitignore README.md composer.json composer.lock node_modules vendor package-lock.json package.json .github"
+  }
+}
