@@ -1,7 +1,7 @@
 <?php
 function show_all_wp_media()
 {
-    $media_info = get_media_info();
+    $media_info = get_wp_media_info();
 
     echo '<h1>All media</h1>';
     echo '<table>';
