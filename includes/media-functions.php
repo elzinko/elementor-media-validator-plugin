@@ -1,4 +1,70 @@
 <?php
+
+function build_media_data()
+{
+    $elementor_pages = get_elementor_posts();
+
+    $media_list = [];
+
+    foreach ($elementor_pages as $page) {
+        $elementor_page_data = get_elementor_data($page->ID);
+
+        foreach ($elementor_page_data as $section) {
+
+            // bloc
+            $bloc_name = get_bloc_name_from_section($section);
+            $bloc_url = get_url_for_section($section);
+
+            $images = find_images_in_section($section);
+
+            foreach ($images as $image) {
+
+                // page and bloc
+                $media_info = array(
+                    'page' => $page->post_title,
+                    'bloc' => $bloc_name,
+                    'url' => $image['url'],
+                    'provenance' => 'Elementor'
+                );
+
+                // source
+                $source = get_image_source($image['url']);
+                $source_url = !empty($source['url']) ? esc_url($source['url']) : 'Unknown';
+                $source_site = !empty($source['site']) ? esc_html($source['site']) : 'Unknown';
+
+                // description
+                $image_id = $image['id_wp'];
+                $edit_url = "https://media-plugin.local/wp-admin/upload.php?item={$image_id}";
+                $url = !empty($image['url']) ? esc_url($image['url']) : 'Unknown';
+
+                if (empty($image['description'])) {
+                    $description = "<a href='{$edit_url}'>Unknown, click to edit</a>";
+                } else {
+                    $description = "<a href='{$url}'>" . esc_html($image['description']) . "</a>";
+                }
+
+                // thumbnail
+                $thumbnail = wp_get_attachment_image($image_id, 'thumbnail');
+
+                // Add to media list
+                $media_list[] = [
+                    'page' => esc_html($media_info['page']),
+                    'bloc' => esc_html($media_info['bloc']),
+                    'bloc_url' => $bloc_url,
+                    'format' => esc_html($image['format']),
+                    'description' => $description,
+                    'source_url' => $source_url,
+                    'source_site' => $source_site,
+                    'thumbnail' => $thumbnail,
+                ];
+            }
+        }
+    }
+
+    return $media_list;
+}
+
+
 // Obtenir les informations des médias
 function get_media_info()
 {
@@ -15,15 +81,12 @@ function get_media_info()
         $block_query = "SELECT * FROM {$wpdb->postmeta} WHERE post_id = {$file->ID}";
         $block = $wpdb->get_results($block_query);
 
-        // Ici, il faudra parser l'information du bloc pour récupérer l'information sur la provenance.
-        // Cette étape dépendra de comment cette information est stockée. 
-
         $media_info[] = array(
-            'page' => 'à déterminer', // dépendra de comment vous pouvez lier le média à une page
-            'bloc' => 'à déterminer', // dépendra de comment vous pouvez lier le média à un bloc
+            'page' => 'à déterminer',
+            'bloc' => 'à déterminer',
             'url' => wp_get_attachment_url($file->ID),
-            'provenance' => 'à déterminer', // dépendra de comment l'information de la provenance est stockée
-            'validation' => false, // Initialement, l'image n'est pas validée
+            'provenance' => 'à déterminer',
+            'validation' => false,
         );
     }
 
