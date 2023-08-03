@@ -29,7 +29,7 @@ npm run bundle
 ### Others
 
 - [x] bundle plugin
-- [ ] add export to csv
+- [x] add export to csv
 - [ ] add validation control
 - [ ] add client access
 - [ ] add time control

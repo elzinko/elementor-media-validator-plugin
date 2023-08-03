@@ -11,6 +11,7 @@
 include(plugin_dir_path(__FILE__) . 'includes/media-functions.php');
 include(plugin_dir_path(__FILE__) . 'includes/elementor-functions.php');
 include(plugin_dir_path(__FILE__) . 'admin/admin-page.php');
+include(plugin_dir_path(__FILE__) . 'admin/export.php');
 
 
 // Définissez la constante PLUGIN_DEBUG sur true pour activer le débogage.
