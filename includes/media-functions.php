@@ -15,46 +15,47 @@ function build_media_data()
             $bloc_name = get_bloc_name_from_section($section);
             $bloc_url = get_url_for_section($section);
 
+            // images
             $images = find_images_in_section($section);
-
             foreach ($images as $image) {
 
-                // page and bloc
-                $media_info = array(
-                    'page' => $page->post_title,
-                    'bloc' => $bloc_name,
-                    'url' => $image['url'],
-                    'provenance' => 'Elementor'
-                );
+                // page
+                $page_name = $page->post_title;
 
-                // source
-                $source = get_image_source($image['url']);
-                $source_url = !empty($source['url']) ? esc_url($source['url']) : 'Unknown';
-                $source_site = !empty($source['site']) ? esc_html($source['site']) : 'Unknown';
+                // bloc
+                if (empty($bloc_url)) {
+                    $bloc = $bloc_name;
+                } else {
+                    $bloc = "<a href='$bloc_url'>$bloc_name</a>";
+                }
 
                 // description
-                $image_id = $image['id_wp'];
-                $edit_url = "https://media-plugin.local/wp-admin/upload.php?item={$image_id}";
-                $url = !empty($image['url']) ? esc_url($image['url']) : 'Unknown';
-
+                $description = $image['description'];
                 if (empty($image['description'])) {
-                    $description = "<a href='{$edit_url}'>Unknown, click to edit</a>";
+                    $description = "<a href='{$image['edit_url']}'>Click to add description</a>";
                 } else {
-                    $description = "<a href='{$url}'>" . esc_html($image['description']) . "</a>";
+                    if (mb_strlen($description) > 30) {
+                        $description = mb_substr($description, 0, 30);
+                        $description .= "...";
+                    }
                 }
 
                 // thumbnail
-                $thumbnail = wp_get_attachment_image($image_id, 'thumbnail');
+                $thumbnail = '';
+                if (empty($image['url'])) {
+                    $thumbnail = $image['thumbnail'];
+                } else {
+                    $thumbnail = "<a href='" . $image['url'] . "'>" . $image['thumbnail'] . "</a>";
+                }
 
-                // Add to media list
                 $media_list[] = [
-                    'page' => esc_html($media_info['page']),
-                    'bloc' => esc_html($media_info['bloc']),
-                    'bloc_url' => $bloc_url,
-                    'format' => esc_html($image['format']),
+                    'page' => $page_name,
+                    'bloc' => $bloc,
+                    'format' => $image['format'],
                     'description' => $description,
-                    'source_url' => $source_url,
-                    'source_site' => $source_site,
+                    'dimentions' => $image['dimensions'],
+                    'source_url' => $image['source_url'],
+                    'source_site' => $image['source_site'],
                     'thumbnail' => $thumbnail,
                 ];
             }
@@ -99,7 +100,7 @@ function get_image_source($image_url)
     // Extrait le nom du fichier de l'URL de l'image.
     $filename = basename($image_url);
 
-    // Utilisez une expression régulière pour extraire le nom du site et le numéro de l'image.
+    // Utilisez une expression régulière pour extraire le nom du site et le numéro de l'image pour iStockphoto.
     if (preg_match('/^([a-z]+)-(\d+)-\d+x\d+\.\w+$/', $filename, $matches)) {
         // Construit l'URL de la source de l'image.
         $source_url = sprintf('https://www.%s.com/fr/search/2/image?family=phrase=%s', $matches[1], $matches[2]);
@@ -111,6 +112,18 @@ function get_image_source($image_url)
         );
     }
 
-    // Si le nom du fichier ne correspond pas au format attendu, renvoie un tableau vide.
+    // Utilisez une expression régulière pour extraire le numéro de l'image pour Envato.
+    if (preg_match('/^([a-z-]+)-(\d{6})\w\.\w+$/', $filename, $matches)) {
+        // Construit l'URL de la source de l'image.
+        $source_url = sprintf('https://elements.envato.com/elements-api/items/%s.json?languageCode=fr', $matches[2]);
+
+        // Renvoie le nom du site et l'URL de la source.
+        return array(
+            'site' => 'envato',
+            'url' => $source_url,
+        );
+    }
+
+    // Si le nom du fichier ne correspond pas à l'un des formats attendus, renvoie un tableau vide.
     return array();
 }

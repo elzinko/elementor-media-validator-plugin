@@ -20,12 +20,12 @@ class Media_List_Table extends WP_List_Table
     function get_columns()
     {
         $columns = array(
-            'cb'            => '<input type="checkbox" />',
+            'cb' => '<input type="checkbox" />',
             'page' => 'Page',
             'bloc' => 'Bloc',
-            'bloc_url'    => 'Bloc URL',
-            'format'      => 'Format',
+            'format' => 'Format',
             'description' => 'Description',
+            'dimentions' => 'Dimentions',
             'source_url' => 'Source URL',
             'source_site' => 'Source Site',
             'thumbnail' => 'Thumbnail',
@@ -69,7 +69,8 @@ class Media_List_Table extends WP_List_Table
         $sortable_columns = array(
             'page'  => array('page', false),
             'bloc' => array('bloc', false),
-            'format'   => array('format', true)
+            'format'   => array('format', true),
+            'source_site' => array('source_site', false),
         );
         return $sortable_columns;
     }

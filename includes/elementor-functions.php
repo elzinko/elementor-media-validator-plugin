@@ -20,10 +20,14 @@ function get_elementor_posts()
     return array();
 }
 
-// Fonctions pour interagir avec Elementor
-function get_elementor_data($post_id)
+/**
+ * Get elementor data from given post. If PLUGIN_DEBUG is enabled, then data are print on screen and saved in a file.
+ *
+ * @param [type] $post_id the post id
+ * @return mixed
+ */
+function get_elementor_data($post_id): mixed
 {
-    // Obtenez les données d'Elementor pour le post.
     $elementor_data = get_post_meta($post_id, '_elementor_data', true);
 
     $my_plugin_folder = WP_PLUGIN_DIR . '/elementor-media-validation-plugin';
@@ -37,43 +41,58 @@ function get_elementor_data($post_id)
         }
     }
 
-
-    // Convertissez les données JSON en un tableau PHP.
     $elementor_data = json_decode($elementor_data, true);
 
     return $elementor_data;
 }
-
-function find_images_in_section($section)
+/**
+ * Find images in section
+ *
+ * @param [type] $section the section
+ * @return mixed
+ */
+function find_images_in_section($section): mixed
 {
     $images = array();
 
-    // Parcourez les éléments de la section pour trouver les widgets avec des images.
+    // check recursively for images
     foreach ($section['elements'] as $element) {
-        // Vérifiez si l'élément est un widget et si son type est 'image'.
+        // Check if the element is a widget and if it's an image widget.
         if ($element['elType'] === 'widget' && $element['widgetType'] === 'image') {
-            // Récupérez l'ID de l'image de la bibliothèque des médias WordPress.
             $image_id = $element['settings']['image']['id'];
-
-            // Obtenez les métadonnées de l'image.
+            $url = $element['settings']['image']['url'];
             $metadata = wp_get_attachment_metadata($image_id);
 
-            // Ajoutez les informations sur l'image au tableau.
-
+            // description
             $description = get_post_field('post_content', $image_id);
-            if (mb_strlen($description) > 30) {
-                $description = mb_substr($description, 0, 30);
-                $description .= "...";
-            }
+
+            // source
+            $source = get_image_source($url);
+            // TODO move next 2 lines in get_image_source
+            $source_url = !empty($source['url']) ? esc_url($source['url']) : 'Unknown';
+            $source_site = !empty($source['site']) ? esc_html($source['site']) : 'Unknown';
+
+            // edit url
+            $edit_url = "https://media-plugin.local/wp-admin/upload.php?item={$image_id}";
+
+            // thumbnail
+            $thumbnail = wp_get_attachment_image($image_id, 'thumbnail');
+
 
             $images[] = array(
+                'id_wp' => $image_id,
+                'id' => $element['id'],
                 'url' => $element['settings']['image']['url'],
-                // 'description' => wp_get_attachment_caption($image_id), // description de l'image mais pas celle saisie lors de l'ajout de l'image
-                'description' => $description, // Récupérez la légende de l'image en tant que description.
-                'format' => pathinfo($element['settings']['image']['url'], PATHINFO_EXTENSION), // Récupérez le format de l'image à partir de son URL.
-                'dimensions' => "{$metadata['width']}x{$metadata['height']}", // Récupérez les dimensions de l'image à partir des métadonnées.
-                'id' => $element['id'], // Vous pouvez utiliser cet ID pour créer une ancre.
-                'id_wp' => $image_id // Vous pouvez utiliser cet ID pour obtenir l'image à l'aide de wp_get_attachment_image().
+                'file' => $metadata['file'],
+                'description' => $description,
+                'format' => pathinfo($element['settings']['image']['url'], PATHINFO_EXTENSION),
+                'dimensions' => "{$metadata['width']}x{$metadata['height']}",
+                'credit' => get_image_credit($metadata),
+                'source_url' => $source_url,
+                'source_site' => $source_site,
+                'thumbnail' => $thumbnail,
+                'edit_url' => $edit_url,
+
             );
         }
 
@@ -84,6 +103,28 @@ function find_images_in_section($section)
     }
 
     return $images;
+}
+
+
+function get_image_credit($metadata)
+{
+    $credits = $metadata['image_meta']['credit'];
+    $file = $metadata['file'];
+
+    if (!empty($credit)) {
+        switch ($credit) {
+            case 'get image':
+                return 'gettyimage';
+            case 'shutterstock':
+                return 'shutterstock';
+        }
+    } else if (!empty($file)) {
+        if (strpos($file, 'gettyimage') !== false) {
+            return 'gettyimage';
+        } else if (strpos($file, 'shutterstock') !== false) {
+            return 'shutterstock';
+        }
+    }
 }
 
 /**
