@@ -11,6 +11,7 @@
 include(plugin_dir_path(__FILE__) . 'includes/media-functions.php');
 include(plugin_dir_path(__FILE__) . 'includes/elementor-functions.php');
 include(plugin_dir_path(__FILE__) . 'admin/admin-page.php');
+include(plugin_dir_path(__FILE__) . 'includes/functions.php');
 include(plugin_dir_path(__FILE__) . 'admin/export.php');
 
 
@@ -32,3 +33,20 @@ function media_info_tracker_activation()
         wp_die(__('Ce plugin nécessite Elementor pour fonctionner. Veuillez installer et activer Elementor, puis réessayez.', 'media-info-tracker'));
     }
 }
+
+/**
+ * Register js script that allow validation of media
+ *
+ * @return void
+ */
+function enqueue_my_script()
+{
+    wp_register_script('my-script', plugin_dir_url(__FILE__) . 'assets/js/custom.js', array('jquery'), '1.0', true);
+    wp_enqueue_script('my-script');
+    wp_localize_script('my-script', 'MyAjax', array(
+        'ajaxurl' => admin_url('admin-ajax.php'),
+        'security' => wp_create_nonce('my-special-string'),
+    ));
+}
+
+add_action('admin_enqueue_scripts', 'enqueue_my_script');

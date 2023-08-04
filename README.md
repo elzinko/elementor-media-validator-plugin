@@ -30,7 +30,7 @@ npm run bundle
 
 - [x] bundle plugin
 - [x] add export to csv
-- [ ] add validation control
+- [x] add persistant validation control using checkbox
 - [ ] add client access
 - [ ] add time control
 - [ ] add dev documentation

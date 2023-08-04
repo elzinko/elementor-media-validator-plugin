@@ -20,6 +20,10 @@ function build_media_data()
 
             foreach ($images as $image) {
 
+                // isValid
+                // $isValid = '<input type="checkbox" data-post-id="' . $image['id_wp'] . '">';
+                $validation = column_validation($image['id_wp']);
+
                 // page
                 $page_name = $page->post_title;
 
@@ -64,6 +68,7 @@ function build_media_data()
                 }
 
                 $media_list[] = [
+                    'validation' => $validation,
                     'page' => $page_name,
                     'bloc' => $bloc,
                     'format' => $image['format'],
@@ -79,6 +84,27 @@ function build_media_data()
     }
 
     return $media_list;
+}
+
+/**
+ * Generates the validation column checkbox for each row
+ *
+ * @param $image
+ * @return string
+ */
+function column_validation($image_id): string
+{
+    // Retrieve the meta_data value
+    $media_validation = get_post_meta($image_id, 'media_validation', true);
+
+    // Check the box if the value is "1"
+    $checked = $media_validation == "1" ? "checked" : "";
+
+    return sprintf(
+        '<input type="checkbox" name="validation" %s data-id="%s" />',
+        $checked,
+        $image_id
+    );
 }
 
 /**
