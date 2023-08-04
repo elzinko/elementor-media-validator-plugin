@@ -24,6 +24,8 @@ class Media_List_Table extends WP_List_Table
             'bloc' => 'Bloc',
             'title' => 'Title',
             'description' => 'Description',
+            'alt_text' => 'Alt',
+            'legend' => 'Legend',
             'source' => 'Source',
             'credit' => 'Credit',
             'dimentions' => 'Size',

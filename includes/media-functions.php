@@ -27,11 +27,7 @@ function build_media_data()
                 $page_name = $page->post_title;
 
                 // bloc
-                if (empty($bloc_url)) {
-                    $bloc = $bloc_name;
-                } else {
-                    $bloc = "<a href='$bloc_url'>$bloc_name</a>";
-                }
+                $bloc = column_bloc($bloc_name, $bloc_url);
 
                 // description
                 $description = column_description($image);
@@ -39,13 +35,14 @@ function build_media_data()
                 // Title
                 $title = column_title($image);
 
+                // alt
+                $legend = column_legend($image);
+
+                // Legend
+                $atl_text = column_alt_text($image);
+
                 // credit
-                $credit = $image['credit'];
-                if ($credit == null) {
-                    $credit = "No credit";
-                } else if (mb_strlen($credit) > 14) {
-                    $credit = mb_substr($credit, 0, 14) . "...";
-                }
+                $credit = column_credit($image);
 
                 // thumbnail
                 $thumbnail = '';
@@ -69,6 +66,8 @@ function build_media_data()
                     'bloc' => $bloc,
                     'format' => $image['format'],
                     'description' => $description,
+                    'alt_text' => $atl_text,
+                    'legend' => $legend,
                     'dimentions' => $image['dimensions'],
                     'source' => $source,
                     'credit' => $credit,
@@ -83,20 +82,51 @@ function build_media_data()
     return $media_list;
 }
 
-/**
- * Generates the validation column checkbox for each row
- *
- * @param $image
- * @return string
- */
+function column_bloc($bloc_name, $bloc_url): string
+{
+    if (empty($bloc_url)) {
+        $bloc = $bloc_name;
+    } else {
+        $bloc = "<a href='$bloc_url'>$bloc_name</a>";
+    }
+    return $bloc;
+}
+
+function column_credit($image): string
+{
+    $credit = $image['credit'];
+    if ($credit == null) {
+        $credit = "No credit";
+    } else if (mb_strlen($credit) > 14) {
+        $credit = mb_substr($credit, 0, 14) . "...";
+    }
+    return $credit;
+}
+
+function column_legend($image): string
+{
+    $legend = $image['legend'];
+    if (empty($legend)) {
+        return "<a href='{$image['edit_url']}'>add legend</a>";
+    } else {
+        return "<a href='#' title='{$legend}'><input type='checkbox' checked disabled /></a>";
+    }
+}
+
+function column_alt_text($image): string
+{
+    $alt_text = $image['alt_text'];
+    if (empty($alt_text)) {
+        return "<a href='{$image['edit_url']}'>add alt text</a>";
+    } else {
+        return "<a href='{$image['edit_url']}' title='{$alt_text}'><input type='checkbox' checked disabled /></a>";
+    }
+}
+
 function column_validation($image_id): string
 {
-    // Retrieve the meta_data value
     $media_validation = get_post_meta($image_id, 'media_validation', true);
-
-    // Check the box if the value is "1"
     $checked = $media_validation == "1" ? "checked" : "";
-
     return sprintf(
         '<input type="checkbox" name="validation" %s data-id="%s" />',
         $checked,
@@ -104,30 +134,24 @@ function column_validation($image_id): string
     );
 }
 
-
 function column_description($image): string
 {
     $description = $image['description'];
     if (empty($description)) {
-        $description = "<a href='{$image['edit_url']}'>add description</a>";
+        return "<a href='{$image['edit_url']}'>add description</a>";
     } else {
-        if (mb_strlen($description) > 30) {
-            $description = mb_substr($description, 0, 30) . "...";
-        }
-        $description = "<a href='{$image['edit_url']}'>$description</a>";
+        return "<a href='{$image['edit_url']}' title='{$description}'><input type='checkbox' checked disabled /></a>";
     }
-    return $description;
 }
 
 function column_title($image): string
 {
-    $title = $image['title'];
+    $title = $image['description'];
     if (empty($title)) {
-        $title = "<a href='{$image['edit_url']}'>add title</a>";
-    } else if (mb_strlen($title) > 14) {
-        $title = mb_substr($title, 0, 14) . "...";
+        return "<a href='{$image['edit_url']}'>add title</a>";
+    } else {
+        return "<a href='{$image['edit_url']}' title='{$title}'><input type='checkbox' checked disabled /></a>";
     }
-    return $title;
 }
 
 /**
@@ -154,8 +178,6 @@ function get_wp_media_info(): array
             'page' => 'à déterminer',
             'bloc' => 'à déterminer',
             'url' => wp_get_attachment_url($file->ID),
-            'provenance' => 'à déterminer',
-            'validation' => false,
         );
     }
 
