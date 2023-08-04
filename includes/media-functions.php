@@ -20,8 +20,7 @@ function build_media_data()
 
             foreach ($images as $image) {
 
-                // isValid
-                // $isValid = '<input type="checkbox" data-post-id="' . $image['id_wp'] . '">';
+                // valid
                 $validation = column_validation($image['id_wp']);
 
                 // page
@@ -35,20 +34,17 @@ function build_media_data()
                 }
 
                 // description
-                $description = $image['description'];
-                if (empty($description)) {
-                    $description = "<a href='{$image['edit_url']}'>add description</a>";
-                } else {
-                    if (mb_strlen($description) > 30) {
-                        $description = mb_substr($description, 0, 30) . "...";
-                    }
-                    $description = "<a href='{$image['edit_url']}'>$description</a>";
-                }
+                $description = column_description($image);
+
+                // Title
+                $title = column_title($image);
 
                 // credit
                 $credit = $image['credit'];
                 if ($credit == null) {
                     $credit = "No credit";
+                } else if (mb_strlen($credit) > 14) {
+                    $credit = mb_substr($credit, 0, 14) . "...";
                 }
 
                 // thumbnail
@@ -62,7 +58,7 @@ function build_media_data()
                 // source
                 $source = $image['source_site'];
                 if (empty($source)) {
-                    $source = "<a href='{$image['edit_url']}'>add source</a>";
+                    $source = "No source";
                 } else {
                     $source = "<a href='{$image['source_url']}'>$source</a>";
                 }
@@ -78,6 +74,7 @@ function build_media_data()
                     'credit' => $credit,
                     'thumbnail' => $thumbnail,
                     'file' => $image['file'],
+                    'title' => $title,
                 ];
             }
         }
@@ -105,6 +102,32 @@ function column_validation($image_id): string
         $checked,
         $image_id
     );
+}
+
+
+function column_description($image): string
+{
+    $description = $image['description'];
+    if (empty($description)) {
+        $description = "<a href='{$image['edit_url']}'>add description</a>";
+    } else {
+        if (mb_strlen($description) > 30) {
+            $description = mb_substr($description, 0, 30) . "...";
+        }
+        $description = "<a href='{$image['edit_url']}'>$description</a>";
+    }
+    return $description;
+}
+
+function column_title($image): string
+{
+    $title = $image['title'];
+    if (empty($title)) {
+        $title = "<a href='{$image['edit_url']}'>add title</a>";
+    } else if (mb_strlen($title) > 14) {
+        $title = mb_substr($title, 0, 14) . "...";
+    }
+    return $title;
 }
 
 /**

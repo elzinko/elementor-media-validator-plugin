@@ -5,14 +5,13 @@ if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
-// Extending class
+// Extending wp table class
 class Media_List_Table extends WP_List_Table
 {
     private $media_data;
 
     private function get_media_data()
     {
-        // use the function from previous question
         return build_media_data();
     }
 
@@ -20,16 +19,17 @@ class Media_List_Table extends WP_List_Table
     function get_columns()
     {
         $columns = array(
-            'validation' => 'Validation',
+            'thumbnail' => 'Thumbnail',
             'page' => 'Page',
             'bloc' => 'Bloc',
-            'format' => 'Format',
+            'title' => 'Title',
             'description' => 'Description',
-            'dimentions' => 'Size',
-            'credit' => 'Credit',
             'source' => 'Source',
-            'file' => 'Filename',
-            'thumbnail' => 'Thumbnail',
+            'credit' => 'Credit',
+            'dimentions' => 'Size',
+            // 'file' => 'Filename',
+            // 'format' => 'Format',
+            'validation' => 'Valid',
         );
         return $columns;
     }
@@ -60,7 +60,7 @@ class Media_List_Table extends WP_List_Table
     {
         return sprintf(
             '<input type="checkbox" name="media[]" value="%s" />',
-            $item['page'] // you may want to change the value depending on your needs
+            $item['page']
         );
     }
 
@@ -70,8 +70,9 @@ class Media_List_Table extends WP_List_Table
         $sortable_columns = array(
             'page'  => array('page', false),
             'bloc' => array('bloc', false),
-            'format'   => array('format', true),
+            'format'   => array('format', false),
             'source' => array('source', false),
+            'credit' => array('credit', false),
         );
         return $sortable_columns;
     }
@@ -81,7 +82,7 @@ class Media_List_Table extends WP_List_Table
     {
         // If no sort, default to page
         $orderby = (!empty($_GET['orderby'])) ? $_GET['orderby'] : 'page';
-        // If no order, default to ascelementor-media-validation-plugin/admin/configuration.php
+        // If no order, default to asc
         $order = (!empty($_GET['order'])) ? $_GET['order'] : 'asc';
         // Determine sort order
         $result = strcmp($a[$orderby], $b[$orderby]);
@@ -89,3 +90,34 @@ class Media_List_Table extends WP_List_Table
         return ($order === 'asc') ? $result : -$result;
     }
 }
+
+
+/**
+ * Plugin menu callback function
+ *
+ * @return void
+ */
+function media_list_init()
+{
+    // Creating an instance
+    $empTable = new Media_List_Table();
+
+    echo '<div class="wrap"><h2>Elementor Media List</h2>';
+    // Prepare table
+    $empTable->prepare_items();
+    // Display table
+    $empTable->display();
+    echo '</div>';
+}
+
+
+/**
+ * Adding menu item
+ *
+ * @return void
+ */
+function my_add_menu_items()
+{
+    add_menu_page('Media validator', 'Media Validator', 'activate_plugins', 'media-validator', 'media_list_init');
+}
+add_action('admin_menu', 'my_add_menu_items');

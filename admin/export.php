@@ -1,38 +1,49 @@
 <?php
 
-// Ajouter une nouvelle page d'option sous le menu "Outils"
+/**
+ * Add export page under the main plugin menu
+ *
+ * @return void
+ */
 function add_export_page()
 {
     add_submenu_page(
-        'media-validator', // Slug du menu parent
-        'Exporter les données', // Titre de la page
-        'Exporter', // Titre du menu
-        'manage_options', // Capability
-        'export_data', // Slug de la page
-        'render_export_page' // Fonction de rendu
+        'media-validator',
+        'Export data',
+        'Export',
+        'manage_options',
+        'export_data',
+        'render_export_page'
     );
 }
 add_action('admin_menu', 'add_export_page');
 
 
-// Rendu de la page d'export
-// Rendu de la page d'export
+/**
+ * Export page render function
+ *
+ * @return void
+ */
 function render_export_page()
 {
 ?>
 <div class="wrap">
-    <h2>Exporter les données</h2>
+    <h2>Export media data</h2>
 
-    <!-- formulaire pour déclencher l'export -->
+    <!-- form to trigger export -->
     <form method="post">
         <input type="hidden" name="export_action" value="1">
-        <?php submit_button('Exporter en CSV'); ?>
+        <?php submit_button('CSV export'); ?>
     </form>
 </div>
 <?php
 }
 
-// Gestion de l'export
+/**
+ * Export handler
+ *
+ * @return void
+ */
 function handle_export_action()
 {
     // Vérifie si l'action d'export a été déclenchée

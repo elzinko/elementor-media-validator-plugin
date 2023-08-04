@@ -18,6 +18,7 @@ npm run bundle
 
 - [x] add istockphoto image handling
 - [x] add gettyimages image handling
+- [ ] check image metadata : alt + title + legend
 - [ ] add agency image handling
 - [ ] add icon handling
 - [ ] add theme image handling

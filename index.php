@@ -16,7 +16,7 @@ define('PLUGIN_NAME', 'media-validator');
 include(plugin_dir_path(__FILE__) . 'includes/media-functions.php');
 include(plugin_dir_path(__FILE__) . 'includes/elementor-functions.php');
 include(plugin_dir_path(__FILE__) . 'includes/functions.php');
-include(plugin_dir_path(__FILE__) . 'admin/admin-page.php');
+include(plugin_dir_path(__FILE__) . 'admin/admin.php');
 include(plugin_dir_path(__FILE__) . 'admin/export.php');
 include(plugin_dir_path(__FILE__) . 'admin/settings.php');
 

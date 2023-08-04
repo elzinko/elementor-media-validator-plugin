@@ -1,3 +1,9 @@
 .wp-list-table {
   table-layout: auto !important;
 }
+
+.wp-list-table td img {
+  /* white-space: nowrap; */
+  width: 100px !important;
+  height: 100px !important;
+}

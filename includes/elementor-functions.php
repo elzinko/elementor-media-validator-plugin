@@ -64,6 +64,9 @@ function find_images_in_section($section): mixed
             $url = $element['settings']['image']['url'];
             $metadata = wp_get_attachment_metadata($image_id);
             $filename = $metadata['file'];
+            $title = get_post_field('post_title', $image_id);
+            $alt_text = get_post_meta($image_id, '_wp_attachment_image_alt', true);
+            $legend = get_post_field('post_excerpt', $image_id);
             $description = get_post_field('post_content', $image_id);
             $edit_url = "https://media-plugin.local/wp-admin/upload.php?item={$image_id}";
             $credit = get_image_credit($metadata);
@@ -84,7 +87,9 @@ function find_images_in_section($section): mixed
                 'thumbnail' => $thumbnail,
                 'format' => pathinfo($element['settings']['image']['url'], PATHINFO_EXTENSION),
                 'dimensions' => "{$metadata['width']}x{$metadata['height']}",
-
+                'title' => $title,
+                'alt_text' => $alt_text,
+                'legend' => $legend
             );
         }
 
