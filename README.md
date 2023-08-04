@@ -31,6 +31,7 @@ npm run bundle
 - [x] bundle plugin
 - [x] add export to csv
 - [x] add persistant validation control using checkbox
+- [x] add shuttershock API client configuration in settings
 - [ ] add client access
 - [ ] add time control
 - [ ] add dev documentation

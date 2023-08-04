@@ -25,10 +25,10 @@ class Media_List_Table extends WP_List_Table
             'bloc' => 'Bloc',
             'format' => 'Format',
             'description' => 'Description',
-            'dimentions' => 'Dimentions',
+            'dimentions' => 'Size',
             'credit' => 'Credit',
             'source' => 'Source',
-            'file' => 'File',
+            'file' => 'Filename',
             'thumbnail' => 'Thumbnail',
         );
         return $columns;
@@ -71,7 +71,7 @@ class Media_List_Table extends WP_List_Table
             'page'  => array('page', false),
             'bloc' => array('bloc', false),
             'format'   => array('format', true),
-            'source_site' => array('source_site', false),
+            'source' => array('source', false),
         );
         return $sortable_columns;
     }
@@ -81,7 +81,7 @@ class Media_List_Table extends WP_List_Table
     {
         // If no sort, default to page
         $orderby = (!empty($_GET['orderby'])) ? $_GET['orderby'] : 'page';
-        // If no order, default to asc
+        // If no order, default to ascelementor-media-validation-plugin/admin/configuration.php
         $order = (!empty($_GET['order'])) ? $_GET['order'] : 'asc';
         // Determine sort order
         $result = strcmp($a[$orderby], $b[$orderby]);
