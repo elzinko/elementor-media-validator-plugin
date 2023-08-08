@@ -38,3 +38,7 @@ npm run bundle
 - [ ] add dev documentation
 - [ ] check LICENCE for wordpress compatibility and pro version
 - [ ] [distribute](https://www.dreamhost.com/blog/how-to-create-your-first-wordpress-plugin/) plugin
+
+
+## infos 
+package.json : Utilisez-le pour les dépendances JavaScript et les scripts liés au développement de votre plugin.composer.json : Utilisez-le pour les dépendances PHP spécifiques à WordPress et pour définir la version minimale requise de PHP, entre autres.Actions GitHub : Utilisez-les pour automatiser les tâches de packaging et de création de releases sur GitHub. Ces actions peuvent être personnalisées en fonction de vos besoins spécifiques.
