@@ -12,7 +12,8 @@ class Media_List_Table extends WP_List_Table
 
     private function get_media_data()
     {
-        return build_media_data();
+        $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
+        return build_media_data($filter);
     }
 
     // Define table columns
@@ -104,12 +105,33 @@ function media_list_init()
     // Creating an instance
     $empTable = new Media_List_Table();
 
+    // Get filter value
+    $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
+
+
     echo '<div class="wrap"><h2>Elementor Media List</h2>';
+
+    // Add filter
+    echo '<select id="media-filter">';
+    echo '<option value="all"' . ($filter === 'all' ? ' selected' : '') . '>All</option>';
+    echo '<option value="validated"' . ($filter === 'validated' ? ' selected' : '') . '>Validated</option>';
+    echo '<option value="not_validated"' . ($filter === 'not_validated' ? ' selected' : '') . '>Not Validated</option>';
+    echo '</select>';
+
     // Prepare table
     $empTable->prepare_items();
     // Display table
     $empTable->display();
     echo '</div>';
+
+    echo '<script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $("#media-filter").change(function() {
+                var selectedFilter = $(this).children("option:selected").val();
+                window.location.search += "&filter=" + selectedFilter;
+            });
+        });
+    </script>';
 }
 
 

@@ -1,8 +1,10 @@
 <?php
 
-function build_media_data()
+function build_media_data($filter = 'all')
 {
     $elementor_pages = get_elementor_posts();
+    // var_dump($elementor_pages);
+    // die();
 
     $media_list = [];
 
@@ -20,45 +22,30 @@ function build_media_data()
 
             foreach ($images as $image) {
 
-                // valid
+                // If image is filtered (validated / not_validated) in the admin page, skip it.
+                if (is_filtered($image, $filter)) {
+                    continue;
+                }
+
                 $validation = column_validation($image['id_wp']);
 
-                // page
                 $page_name = $page->post_title;
 
-                // bloc
                 $bloc = column_bloc($bloc_name, $bloc_url);
 
-                // description
                 $description = column_description($image);
 
-                // Title
                 $title = column_title($image);
 
-                // alt
                 $legend = column_legend($image);
 
-                // Legend
                 $atl_text = column_alt_text($image);
 
-                // credit
                 $credit = column_credit($image);
 
-                // thumbnail
-                $thumbnail = '';
-                if (empty($image['url'])) {
-                    $thumbnail = $image['thumbnail'];
-                } else {
-                    $thumbnail = "<a href='" . $image['url'] . "'>" . $image['thumbnail'] . "</a>";
-                }
+                $thumbnail = column_thumbnail($image);
 
-                // source
-                $source = $image['source_site'];
-                if (empty($source)) {
-                    $source = "No source";
-                } else {
-                    $source = "<a href='{$image['source_url']}'>$source</a>";
-                }
+                $source = column_source($image);
 
                 $media_list[] = [
                     'validation' => $validation,
@@ -80,6 +67,49 @@ function build_media_data()
     }
 
     return $media_list;
+}
+
+/**
+ * Check if the image is filtered 
+ *
+ * @param [type] $image
+ * @param [type] $filter
+ * @return boolean
+ */
+function is_filtered($image, $filter)
+{
+    $media_validation = get_post_meta($image['id_wp'], 'media_validation', true);
+    if ($filter == 'validated' && $media_validation != "1") {
+        return true;
+    }
+    if ($filter == 'not_validated' && $media_validation == "1") {
+        return true;
+    }
+
+    return false;
+}
+
+function column_source($image): string
+{
+    $source = $image['source_site'];
+    if (empty($source)) {
+        $source = "No source";
+    } else {
+        $source = "<a href='{$image['source_url']}'>$source</a>";
+    }
+
+    return $source;
+}
+
+function column_thumbnail($image): string
+{
+    $thumbnail =  '';
+    if (empty($image['url'])) {
+        $thumbnail = $image['thumbnail'];
+    } else {
+        $thumbnail = "<a href='" . $image['url'] . "'>" . $image['thumbnail'] . "</a>";
+    }
+    return $thumbnail;
 }
 
 function column_bloc($bloc_name, $bloc_url): string
@@ -224,7 +254,7 @@ function get_image_source($filename): array
 
 function get_image_credit($metadata)
 {
-    return $metadata['image_meta']['credit'];
+    return $metadata['image_meta']['credit'] ?? null;
 }
 
 /**

@@ -19,7 +19,6 @@ npm run bundle
 - [x] add istockphoto image handling
 - [x] add gettyimages image handling
 - [x] check image metadata : alt + title + legend
-- [ ] add agency image handling
 - [ ] add icon handling
 - [ ] add theme image handling
 - [ ] add Envato image handling
@@ -33,7 +32,9 @@ npm run bundle
 - [x] add export to csv
 - [x] add persistant validation control using checkbox
 - [x] add shuttershock API client configuration in settings
+- [x] filtrer les media qui sont validés
 - [ ] add client access
+- [ ] add agency image handling
 - [ ] add time control
 - [ ] add dev documentation
 - [ ] check LICENCE for wordpress compatibility and pro version
