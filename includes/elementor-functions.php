@@ -63,15 +63,16 @@ function find_images_in_section($section): mixed
             $image_id = $element['settings']['image']['id'];
             $url = $element['settings']['image']['url'];
             $metadata = wp_get_attachment_metadata($image_id);
-            $filename = $metadata['file'];
+            $filename = $metadata['file'] ?? 'no filename';
             $title = get_post_field('post_title', $image_id);
             $alt_text = get_post_meta($image_id, '_wp_attachment_image_alt', true);
             $legend = get_post_field('post_excerpt', $image_id);
             $description = get_post_field('post_content', $image_id);
             $edit_url = "https://media-plugin.local/wp-admin/upload.php?item={$image_id}";
             $credit = get_image_credit($metadata);
-            $source = get_image_source($metadata['file']);
+            $source = get_image_source($filename);
             $thumbnail = wp_get_attachment_image($image_id, 'thumbnail');
+            $dimensions = build_dimensions($metadata, $filename, $url);
 
             // Add the image to the array.
             $images[] = array(
@@ -86,10 +87,10 @@ function find_images_in_section($section): mixed
                 'source_site' => $source['site'],
                 'thumbnail' => $thumbnail,
                 'format' => pathinfo($element['settings']['image']['url'], PATHINFO_EXTENSION),
-                'dimensions' => "{$metadata['width']}x{$metadata['height']}",
+                'dimensions' => $dimensions,
                 'title' => $title,
                 'alt_text' => $alt_text,
-                'legend' => $legend
+                'legend' => $legend,
             );
         }
 
@@ -102,6 +103,61 @@ function find_images_in_section($section): mixed
     return $images;
 }
 
+
+/**
+ * Build dimensions. If metadata is empty, then get dimensions from filename. If no dimensions is found in filename, then get dimensions from url. If no dimensions is found in url, then set dimensions to "A DEFINIR"
+ *
+ * @param [type] $metadata
+ * @param [type] $filename
+ * @return string
+ */
+function build_dimensions($metadata, $filename, $url): string
+{
+    if (empty($metadata) || empty($metadata['width']) || empty($metadata['height'])) {
+        $dimensions = get_dimensions_from_string($filename);
+    } else {
+        $dimensions = "{$metadata['width']}x{$metadata['height']}";
+    }
+
+    if ($dimensions == null) {
+        $dimensions = get_dimensions_from_string($url);
+    }
+
+    if ($dimensions == null) {
+        $dimensions = 'A DEFINIR';
+    }
+
+    return $dimensions;
+}
+
+function get_dimensions_from_filename($filename)
+{
+    $dimensions = explode('x', $filename);
+    if (count($dimensions) === 2) {
+        return "{$dimensions[0]}x{$dimensions[1]}";
+    }
+
+    return null;
+}
+
+function get_dimensions_from_url($url)
+{
+    $dimensions = explode('x', $url);
+    if (count($dimensions) === 2) {
+        return "{$dimensions[0]}x{$dimensions[1]}";
+    }
+
+    return null;
+}
+
+function get_dimensions_from_string($string)
+{
+    if (preg_match('/(\d+)x(\d+)/', $string, $matches)) {
+        return "{$matches[1]}x{$matches[2]}";
+    }
+
+    return null;
+}
 
 /**
  * Build name of a section
