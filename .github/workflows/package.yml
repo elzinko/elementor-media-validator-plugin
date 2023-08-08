@@ -1,0 +1,25 @@
+name: Package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+                                          
+      - name: Create Package
+        run: |
+          npm run bundle
+          
+      - name: Upload Package
+        uses: actions/upload-artifact@v2
+        with:
+          name: package
+          path: dist/*.zip
