@@ -18,3 +18,14 @@ jQuery(document).ready(function($) {
         );
     });
 });
+
+jQuery(document).ready(function($) {
+    $('#send_email_checkbox').change(function() {
+        if(this.checked) {
+            $('#email_field_container').show();
+        } else {
+            $('#email_field_container').hide();
+        }
+    });
+});
+

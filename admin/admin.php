@@ -58,14 +58,15 @@ class Media_List_Table extends WP_List_Table
         return $item[$column_name];
     }
 
+
     // To show checkbox with each row
-    function column_cb($item)
-    {
-        return sprintf(
-            '<input type="checkbox" name="media[]" value="%s" />',
-            $item['page']
-        );
-    }
+    // function column_cb($item)
+    // {
+    //     return sprintf(
+    //         '<input type="checkbox" name="media[]" value="%s" />',
+    //         $item['page']
+    //     );
+    // }
 
     // Add sorting to columns
     protected function get_sortable_columns()

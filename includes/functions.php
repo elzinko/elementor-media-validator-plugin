@@ -33,13 +33,20 @@ function update_media_validation()
     // Check the nonce for security
     check_ajax_referer('my-special-string', 'security');
 
-    $postId = $_POST['post_id'];
+    $media_id = $_POST['post_id'];
     $isChecked = $_POST['is_checked'];
+    $key = 'media_validation';
 
     // Update the post meta
-    update_post_meta($postId, 'media_validation', $isChecked);
+    $result = update_post_meta($media_id, $key, $isChecked);
 
-    echo 'Success';
+
+    // Enregistrez l'action dans le log
+    if ($result) {
+        log_media_action($media_id, $key, $isChecked);
+        echo 'Success';
+    }
+
     wp_die(); // This is required to terminate immediately and return a proper response
 }
 

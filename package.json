@@ -1,7 +1,7 @@
 {
-  "name": "elementor-media-validation-plugin",
+  "name": "elementor-media-validator-plugin",
   "version": "1.0.0",
-  "description": "Elementor media validation plugin",
+  "description": "Elementor media validator plugin",
   "author": "Thomas Couderc",
   "license": "See license in LICENSE",
   "keywords": [
@@ -11,7 +11,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/elzinko/elementor-media-validation-plugin.git"
+    "url": "git+https://github.com:elzinko/elementor-media-validator-plugin.git"
   },
   "devDependencies": {
     "dir-archiver": "2.1.0"

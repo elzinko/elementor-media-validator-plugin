@@ -6,7 +6,7 @@ This is a wordpress plugin for media validation
 
 Check [install](./doc/INSTALL.md) document.
 
-## Bnundle
+## Bundle
 
 ```bash
 npm run bundle
@@ -33,6 +33,7 @@ npm run bundle
 - [x] add persistant validation control using checkbox
 - [x] add shuttershock API client configuration in settings
 - [x] filtrer les media qui sont validés
+- [x] add media logger
 - [ ] add client access
 - [ ] add agency image handling
 - [ ] add time control
@@ -40,6 +41,8 @@ npm run bundle
 - [ ] check LICENCE for wordpress compatibility and pro version
 - [ ] [distribute](https://www.dreamhost.com/blog/how-to-create-your-first-wordpress-plugin/) plugin
 
+## Infos
 
-## infos 
-package.json : Utilisez-le pour les dépendances JavaScript et les scripts liés au développement de votre plugin.composer.json : Utilisez-le pour les dépendances PHP spécifiques à WordPress et pour définir la version minimale requise de PHP, entre autres.Actions GitHub : Utilisez-les pour automatiser les tâches de packaging et de création de releases sur GitHub. Ces actions peuvent être personnalisées en fonction de vos besoins spécifiques.
+- **package.json** : Use it for JavaScript dependencies and scripts related to your plugin development.
+- **composer.json** : Use it for WordPress-specific PHP dependencies and to set the minimum PHP version required, among other things.
+- **Actions GitHub** : Use them to automate packaging and release creation tasks on GitHub. These actions can be customized to your specific needs.
