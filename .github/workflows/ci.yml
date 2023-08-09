@@ -30,7 +30,7 @@ jobs:
         run: npm run bundle
 
       - run: npm run infos
-      - run: npm run infos-dist
+      - run: npm run ls
       - run: npm run pwd
 
       - name: Upload Package
