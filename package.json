@@ -1,6 +1,6 @@
 {
   "name": "elementor-media-validator-plugin",
-  "version": "1.0.0",
+  "version": "0.1.5",
   "description": "Elementor media validator plugin",
   "author": "Thomas Couderc",
   "license": "See license in LICENSE",
