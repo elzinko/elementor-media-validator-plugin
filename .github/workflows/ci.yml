@@ -29,10 +29,12 @@ jobs:
       - name: Bundle
         run: npm run bundle
 
+      - run: ls -al dist
+
       - name: Upload Package
         uses: actions/upload-artifact@v3
         with:
-          name: package
+          name: elementor-media-validator-plugin
           path: dist/*.zip
 
   release:
@@ -48,8 +50,10 @@ jobs:
       - name: Download Package
         uses: actions/download-artifact@v3
         with:
-          name: package
-          path: dist
+          name: elementor-media-validator-plugin
+
+      - name: Display structure of downloaded files
+        run: ls -R
 
       - name: Create Release
         id: create_release
@@ -69,5 +73,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: *.zip
+          asset_path: ./elementor-media-validator-plugin.zip
+          asset_name: elementor-media-validator-plugin.zip
           asset_content_type: application/zip
