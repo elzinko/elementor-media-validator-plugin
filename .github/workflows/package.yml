@@ -11,15 +11,14 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-                                          
       - name: Create Package
         run: |
           npm run bundle
-          
+
       - name: Upload Package
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: package
           path: dist/*.zip
