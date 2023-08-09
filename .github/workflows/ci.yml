@@ -29,7 +29,9 @@ jobs:
       - name: Bundle
         run: npm run bundle
 
-      - run: ls -al && ls -al ../ && ls -al ../dist
+      - run: npm run infos
+      - run: npm run infos-dist
+      - run: npm run pwd
 
       - name: Upload Package
         uses: actions/upload-artifact@v3
