@@ -20,6 +20,6 @@
   "scripts": {
     "changelog": "auto-changelog -p --template keepachangelog auto-changelog --breaking-pattern 'BREAKING CHANGE:' && git add CHANGELOG.md dist",
     "suffix": "git describe --exact-match --tags $(git log -n1 --pretty='%h') 2> /dev/null || git log -n1 --pretty='%h'",
-    "bundle": "npm run suffix | xargs -I {} dir-archiver --src . --dest ./dist/$npm_package_name-$npm_package_version-{}.zip --exclude .DS_Store .git .gitattributes .github .gitignore README.md composer.json composer.lock node_modules vendor package-lock.json package.json .github"
+    "bundle": "npm run suffix | xargs -I {} dir-archiver --src . --dest ./dist/$npm_package_name-{}.zip --exclude .DS_Store .git .gitattributes .github .gitignore README.md composer.json composer.lock node_modules vendor package-lock.json package.json .github"
   }
 }
