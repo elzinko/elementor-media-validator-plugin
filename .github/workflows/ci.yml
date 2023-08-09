@@ -37,7 +37,18 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: elementor-media-validator-plugin
-          path: dist/*.zip
+          path: ./dist/*.zip
+
+      - run: mkdir -p path/to/artifact
+
+      - run: echo hello > test/world.txt
+
+      - run: ls -al test/
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: my-artifact
+          path: test/world.txt
 
   release:
     if: startsWith(github.ref, 'refs/tags/')
