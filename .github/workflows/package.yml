@@ -9,14 +9,22 @@ jobs:
   package:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [18.x]
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
-      - name: Install dir-archiver
-        run: npm install -g dir-archiver
+      - name: Install
+        run: |
+          npm install
 
-      - name: Create Package
+      - name: Bundle
         run: |
           npm run bundle
 
