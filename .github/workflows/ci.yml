@@ -17,6 +17,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Fetch Tags
         run: git fetch --tags
 
@@ -27,8 +28,6 @@ jobs:
 
       - name: Install
         run: npm install
-
-      - run:
 
       - name: Bundle
         run: |
