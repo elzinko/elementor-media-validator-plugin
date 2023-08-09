@@ -61,21 +61,10 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R
 
-      - name: Changelog
-        id: changelog
-        uses: release-changelog/action@v1.0.0
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          file: CHANGELOG.md
-          version: ${{ github.ref }}
-
-      - name: Test
-        run: npm run changelog
-
       - name: Debug changelog
         run: |
-          ls -R dist
-          cat dist/CHANGELOG.md
+          ls -R
+          cat CHANGELOG.md
 
       - name: Create Release
         id: create_release
