@@ -19,8 +19,7 @@
   "scripts": {
     "bundle": "dir-archiver --src . --dest ./dist/$npm_package_name-$npm_package_version-$(date +%Y%m%d%H%M%S).zip --exclude .DS_Store .git .gitattributes .github .gitignore README.md composer.json composer.lock node_modules vendor package-lock.json package.json .github",
     "infos": "echo \"name: $npm_package_name\" && echo \"version: $npm_package_version\" && echo \"description: $npm_package_description\" && echo \"author: $npm_package_author\" && echo \"license: $npm_package_license\" && echo \"keywords: $npm_package_keywords\" && echo \"repository: $npm_package_repository\"",
-    "infos-dist": "ls -al && ls -al dist",
+    "ls": "ls -al && ls -al ..",
     "pwd": "pwd"
-    
   }
 }
