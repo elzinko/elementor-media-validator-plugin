@@ -26,6 +26,8 @@ jobs:
         run: |
           npm install
 
+      - run: mkdir -p dist
+
       - name: Bundle
         run: npm run bundle
 
@@ -39,7 +41,7 @@ jobs:
           name: elementor-media-validator-plugin
           path: ./dist/*.zip
 
-      - run: mkdir -p path/to/artifact
+      - run: mkdir -p test
 
       - run: echo hello > test/world.txt
 
