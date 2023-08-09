@@ -1,11 +1,42 @@
-name: Release
+name: Package and Release
 
 on:
   push:
+    branches:
+      - main
     tags:
       - "*"
+
 jobs:
+  package:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install
+        run: |
+          npm install
+
+      - name: Bundle
+        run: npm run bundle
+
+      - name: Upload Package
+        uses: actions/upload-artifact@v3
+        with:
+          name: package
+          path: dist/*.zip
+
   release:
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
 
     steps:
@@ -16,7 +47,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: package
-          path: dist/*.zip
+          path: dist
 
       - name: Create Release
         id: create_release
