@@ -17,23 +17,23 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Fetch Tags
+        run: git fetch --tags
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: Install
-        run: |
-          npm install
+        run: npm install
 
-      - run: mkdir -p dist
+      - run:
 
       - name: Bundle
-        run: npm run bundle
-
-      - run: npm run infos
-      - run: npm run ls
-      - run: npm run pwd
+        run: |
+          mkdir -p dist
+          npm run bundle
 
       - name: Upload Package
         uses: actions/upload-artifact@v3
@@ -66,6 +66,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: elementor-media-validator-plugin
+          path: ./elementor-media-validator-plugin.zip
 
       - name: Display structure of downloaded files
         run: ls -R
