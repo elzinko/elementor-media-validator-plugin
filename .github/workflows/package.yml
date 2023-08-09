@@ -13,6 +13,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Install dir-archiver
+        run: npm install -g dir-archiver
+
       - name: Create Package
         run: |
           npm run bundle
