@@ -82,7 +82,6 @@ jobs:
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${{ github.ref }}
           prerelease: false
           files: |
             elementor-media-validator-plugin.zip
