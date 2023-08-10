@@ -85,6 +85,6 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           body_path: CHANGELOG.md
-          files: ./elementor-media-validator-plugin.zip
+          files: elementor-media-validator-plugin
           draft: false
           prerelease: false
