@@ -11,6 +11,10 @@ jobs:
   package:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+      packages: write
+
     strategy:
       matrix:
         node-version: [18.x]
