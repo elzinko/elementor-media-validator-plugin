@@ -77,13 +77,14 @@ jobs:
           name: changelog
           path: ./CHANGELOG.md
 
+      - run: ls -al
+
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           tag_name: ${{ github.ref }}
           body_path: CHANGELOG.md
-          files: |
-            elementor-media-validator-plugin.zip
+          files: elementor-media-validator-plugin.zip
           draft: false
           prerelease: false
