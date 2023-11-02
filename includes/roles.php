@@ -15,7 +15,7 @@ function emvp_create_agency_role() {
     add_role('emvp_agency', 'Madia validator - Agency', array(
         'read' => true, // Permet de lire
         'emvp_access_validator' => true,
-        'emvp_access_settings' => true,
+        'emvp_access_settings' => false,
         'emvp_access_logger' => true,
         'emvp_access_export' => true,
         )
