@@ -37,8 +37,41 @@ function elementor_media_validation_plugin_activation()
         // Create an error message to let the user know.
         wp_die(__('Ce plugin nécessite Elementor pour fonctionner. Veuillez installer et activer Elementor, puis réessayez.', 'media-info-tracker'));
     }
+
+    /** 
+     * Activate roles from ./includes/roles.php
+     * Needs to disable and enable plugin to make it work
+     */
+    register_activation_hook(__FILE__, 'emvp_create_client_role');
+    register_activation_hook(__FILE__, 'emvp_create_agency_role');
+
+    // Assurez-vous que le rôle administrateur a également cette capacité
+    $role = get_role('administrator');
+    if ($role) {
+        $role->add_cap('emvp_access_validator');
+        $role->add_cap('emvp_access_logger');
+        $role->add_cap('emvp_access_export');
+        $role->add_cap('emvp_access_settings');
+    }
 }
 register_activation_hook(__FILE__, 'elementor_media_validation_plugin_activation');
+
+
+function elementor_media_validation_plugin_deactivation() {
+
+    register_deactivation_hook(__FILE__, 'emvp_remove_client_role');
+    register_deactivation_hook(__FILE__, 'emvp_remove_agency_role');
+
+    // Retirer les capacités personnalisées du rôle administrateur
+    $role = get_role('administrator');
+    if ($role) {
+        $role->remove_cap('emvp_access_validator');
+        $role->remove_cap('emvp_access_logger');
+        $role->remove_cap('emvp_access_export');
+        $role->remove_cap('emvp_access_settings');
+    }
+}
+register_deactivation_hook(__FILE__, 'elementor_media_validation_plugin_deactivation');
 
 /**
  * Register js script that allow media validation
@@ -67,13 +100,3 @@ function my_custom_admin_styles()
     wp_enqueue_style('my_custom_styles', plugin_dir_url(__FILE__) . 'assets/css/admin.css');
 }
 add_action('admin_enqueue_scripts', 'my_custom_admin_styles');
-
-
-/** 
- * Activate roles from ./includes/roles.php
- * Needs to disable and enable plugin to make it work
- */
-register_activation_hook(__FILE__, 'emvp_create_client_role');
-register_activation_hook(__FILE__, 'emvp_create_agency_role');
-register_deactivation_hook(__FILE__, 'emvp_remove_client_role');
-register_deactivation_hook(__FILE__, 'emvp_remove_agency_role');
