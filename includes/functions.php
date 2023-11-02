@@ -35,12 +35,18 @@ function update_media_validation()
 
     $media_id = $_POST['post_id'];
     $isChecked = $_POST['is_checked'];
+    $comment = $_POST['comment'];
     $key = 'media_validation';
+
+    // // add comment
+    // $result = update_post_meta($media_id, 'validation_comment', $comment);
+    // if ($result) {
+    //     log_media_action($media_id, $key, $isChecked);
+    //     echo 'Success';
+    // }
 
     // Update the post meta
     $result = update_post_meta($media_id, $key, $isChecked);
-
-
     // Enregistrez l'action dans le log
     if ($result) {
         log_media_action($media_id, $key, $isChecked);
