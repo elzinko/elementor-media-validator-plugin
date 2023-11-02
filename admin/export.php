@@ -7,14 +7,16 @@
  */
 function add_export_page()
 {
-    add_submenu_page(
-        'media-validator',
-        'Export data',
-        'Export',
-        'manage_options',
-        'export_data',
-        'render_export_page'
-    );
+    if (current_user_can('manage_options') || current_user_can('emvp_access_export')) {
+        add_submenu_page(
+            'media-validator',
+            'Export data',
+            'Export',
+            'emvp_access_export',
+            'export_data',
+            'render_export_page'
+        );
+    }
 }
 add_action('admin_menu', 'add_export_page');
 
@@ -123,4 +125,5 @@ function handle_export_action()
         });
     }
 }
+
 add_action('admin_init', 'handle_export_action');

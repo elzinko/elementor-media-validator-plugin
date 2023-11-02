@@ -101,7 +101,7 @@ class Media_List_Table extends WP_List_Table
  *
  * @return void
  */
-function media_list_init()
+function render_validator_page()
 {
     // Creating an instance
     $empTable = new Media_List_Table();
@@ -141,8 +141,16 @@ function media_list_init()
  *
  * @return void
  */
-function my_add_menu_items()
+function add_validator_page()
 {
-    add_menu_page('Media validator', 'Media Validator', 'activate_plugins', 'media-validator', 'media_list_init');
+    if (current_user_can('manage_options') || current_user_can('emvp_access_validator')) {
+        add_menu_page(
+            'Media validator', 
+            'Media Validator', 
+            'emvp_access_validator', 
+            'media-validator', 
+            'render_validator_page'
+        );
+    }
 }
-add_action('admin_menu', 'my_add_menu_items');
+add_action('admin_menu', 'add_validator_page');

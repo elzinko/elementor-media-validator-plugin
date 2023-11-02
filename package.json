@@ -21,7 +21,7 @@
     "changelog": "auto-changelog -p --template keepachangelog auto-changelog --breaking-pattern 'BREAKING CHANGE:'",
     "tag": "git describe --tags --always",
     "prebundle": "mkdir -p dist",
-    "bundle": "npm run tag | tail -n 1 | xargs -I {} npx dir-archiver --src . --dest ./dist/$npm_package_name-{}.zip --exclude .DS_Store .git .gitattributes .github .gitignore README.md composer.json composer.lock node_modules vendor package-lock.json package.json .github devel samples",
+    "bundle": "npm run tag | tail -n 1 | xargs -I {} npx dir-archiver --src . --dest ./dist/$npm_package_name-{}.zip --exclude .DS_Store .git .gitattributes .github .gitignore README.md composer.lock node_modules vendor package-lock.json .github devel samples dist",
     "clean": "rm -rf dist && rm -rf node_modules"
   }
 }

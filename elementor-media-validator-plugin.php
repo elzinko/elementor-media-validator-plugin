@@ -8,16 +8,17 @@
  */
 
 
-define('PLUGIN_DEBUG', false);
+define('PLUGIN_DEBUG', true);
 define('PLUGIN_VERSION', '1.0.0');
 define('PLUGIN_NAME', 'elementor-media-validator-plugin');
 
+include(plugin_dir_path(__FILE__) . 'includes/roles.php');
 include(plugin_dir_path(__FILE__) . 'includes/media-functions.php');
 include(plugin_dir_path(__FILE__) . 'includes/elementor-functions.php');
 include(plugin_dir_path(__FILE__) . 'includes/functions.php');
-include(plugin_dir_path(__FILE__) . 'admin/admin.php');
+include(plugin_dir_path(__FILE__) . 'admin/validator.php');
 include(plugin_dir_path(__FILE__) . 'admin/export.php');
-include(plugin_dir_path(__FILE__) . 'admin/media-logger.php');
+include(plugin_dir_path(__FILE__) . 'admin/logger.php');
 include(plugin_dir_path(__FILE__) . 'admin/settings.php');
 
 
@@ -68,5 +69,11 @@ function my_custom_admin_styles()
 add_action('admin_enqueue_scripts', 'my_custom_admin_styles');
 
 
-// Regoster media table creation in admin/media-logger.php
-register_activation_hook(__FILE__, 'create_media_log_table');
+/** 
+ * Activate roles from ./includes/roles.php
+ * Needs to disable and enable plugin to make it work
+ */
+register_activation_hook(__FILE__, 'emvp_create_client_role');
+register_activation_hook(__FILE__, 'emvp_create_agency_role');
+register_deactivation_hook(__FILE__, 'emvp_remove_client_role');
+register_deactivation_hook(__FILE__, 'emvp_remove_agency_role');

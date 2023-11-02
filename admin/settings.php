@@ -14,14 +14,16 @@
  */
 function add_settings_page()
 {
-    add_submenu_page(
-        'media-validator',
-        'Paramètres API Shutterstock', // Page title
-        'Settings', // Menu title
-        'manage_options', // Capability
-        'shutterstock_settings', // Menu slug
-        'render_settings_page' // Render function
-    );
+    if (current_user_can('manage_options') || current_user_can('emvp_access_settings')) {
+        add_submenu_page(
+            'media-validator',
+            'Settings', // Page title
+            'Settings', // Menu title
+            'emvp_access_settings', // Capability
+            'settings', // Menu slug
+            'render_settings_page' // Render function
+        );
+    }
 }
 add_action('admin_menu', 'add_settings_page');
 
