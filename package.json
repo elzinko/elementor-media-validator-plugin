@@ -1,6 +1,6 @@
 {
   "name": "elementor-media-validator-plugin",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Elementor media validator plugin",
   "author": "Thomas Couderc",
   "license": "See license in LICENSE",
@@ -19,7 +19,7 @@
   },
   "scripts": {
     "changelog": "auto-changelog -p --template keepachangelog auto-changelog --breaking-pattern 'BREAKING CHANGE:'",
-    "new-tag": "cat package.json | jq -r '.version' | xargs git tag -a v",
+    "new-tag": "cat package.json | jq -r '.version' | xargs git tag '{}' && git push origin --tags",
     "tag": "git describe --tags --always",
     "prebundle": "mkdir -p dist",
     "bundle": "npm run tag | tail -n 1 | xargs -I {} npx dir-archiver --src . --dest ./dist/$npm_package_name-{}.zip --exclude .DS_Store .git .gitattributes .github .gitignore README.md composer.lock node_modules vendor package-lock.json .github devel samples dist",
