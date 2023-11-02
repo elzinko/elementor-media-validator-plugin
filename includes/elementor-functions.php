@@ -224,19 +224,21 @@ function find_anchor_recursive($array): string|null
 /**
  * Get url for section. The url is build using the first anchor found in the section
  *
- * @param [type] $section
+ * @param int $page_id the page id
+ * @param array $section
  * @return string|null
  */
-function build_section_url($section): string|null
+function build_section_url($page_id, $section): ?string
 {
-    $base_url = get_site_url();
+    // Get the permalink for the page
+    $page_url = get_permalink($page_id);
 
     // Find the anchor recursively
     $anchor = find_anchor_recursive($section);
 
     if ($anchor) {
-        // Build the anchor link
-        $anchor_link = $base_url . '#' . $anchor;
+        // Build the full URL with the page permalink and the anchor
+        $anchor_link = $page_url . '#' . $anchor;
         return $anchor_link;
     }
 

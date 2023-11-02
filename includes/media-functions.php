@@ -15,7 +15,7 @@ function build_media_data($filter = 'all')
 
             // bloc
             $bloc_name = build_section_name($section);
-            $bloc_url = build_section_url($section);
+            $bloc_url = build_section_url($page->ID  , $section);
 
             // images
             $images = find_images_in_section($section);
