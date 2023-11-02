@@ -2,24 +2,6 @@
 
 define('ACTION_LOG_TABLE_NAME', 'action_log');
 
-// Menu
-function add_logger_page()
-{
-    if (current_user_can('manage_options') || current_user_can('emvp_access_logger')) {
-        add_submenu_page(
-            'media-validator',
-            'Logger',
-            'Logger',
-            'emvp_access_logger',
-            'logger',
-            'render_logger_page'
-        );
-    }
-}
-add_action('admin_menu', 'add_logger_page');
-
-
-
 if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
@@ -164,7 +146,7 @@ class Action_Log_List_Table extends WP_List_Table {
 }
 
 // Then in your render_history_page function you would use this class
-function render_history_page() {
+function render_logger_page() {
     $actionLogListTable = new Action_Log_List_Table();
     $actionLogListTable->prepare_items();
     ?>
@@ -236,3 +218,19 @@ function log_media_action($media_id, $key, $value)
         )
     );
 }
+
+
+function add_logger_page()
+{
+    if (current_user_can('manage_options') || current_user_can('emvp_access_logger')) {
+        add_submenu_page(
+            'media-validator',
+            'Logger',
+            'Logger',
+            'emvp_access_logger',
+            'logger',
+            'render_logger_page'
+        );
+    }
+}
+add_action('admin_menu', 'add_logger_page');

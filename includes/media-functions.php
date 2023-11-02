@@ -156,12 +156,15 @@ function column_alt_text($image): string
 function column_validation($image_id): string
 {
     $media_validation = get_post_meta($image_id, 'media_validation', true);
-    $checked = $media_validation == "1" ? "checked" : "";
+    $checked = $media_validation=="true"? "checked" : "";
+    $disabled = ($media_validation && in_array( 'emvp_client', (array) wp_get_current_user()->roles ))? "disabled" : "";
+    
     return sprintf(
-        '<input type="checkbox" name="validation" %s data-id="%s" />',
+        '<input type="checkbox" name="validation" data-id="%s" %s %s />',
+        $image_id,
         $checked,
-        $image_id
-    );
+        $disabled
+        );
 }
 
 function column_description($image): string
