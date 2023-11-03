@@ -7,10 +7,13 @@
  * Author: Thomas Couderc
  */
 
-
 define('PLUGIN_DEBUG', true);
 define('PLUGIN_VERSION', '1.0.0');
 define('PLUGIN_NAME', 'elementor-media-validator-plugin');
+
+define('PLUGIN_PATH', plugin_dir_path(__FILE__));
+include( PLUGIN_PATH . 'includes/Base/Activate.php' );
+use EMVP\Base\Activate;
 
 include(plugin_dir_path(__FILE__) . 'includes/roles.php');
 include(plugin_dir_path(__FILE__) . 'includes/media-functions.php');
@@ -27,8 +30,7 @@ include(plugin_dir_path(__FILE__) . 'admin/settings.php');
  * Register plugin activation hook.
  * Check if Elementor is active, if not, deactivate plugin.
  */
-
-function elementor_media_validation_plugin_activation()
+function emvp_activation()
 {
     if (!is_plugin_active('elementor/elementor.php')) {
         // Disable your plugin.
@@ -38,13 +40,6 @@ function elementor_media_validation_plugin_activation()
         wp_die(__('Ce plugin nécessite Elementor pour fonctionner. Veuillez installer et activer Elementor, puis réessayez.', 'media-info-tracker'));
     }
 
-    /** 
-     * Activate roles from ./includes/roles.php
-     * Needs to disable and enable plugin to make it work
-     */
-    register_activation_hook(__FILE__, 'emvp_create_client_role');
-    register_activation_hook(__FILE__, 'emvp_create_agency_role');
-
     // Assurez-vous que le rôle administrateur a également cette capacité
     $role = get_role('administrator');
     if ($role) {
@@ -53,11 +48,13 @@ function elementor_media_validation_plugin_activation()
         $role->add_cap('emvp_access_export');
         $role->add_cap('emvp_access_settings');
     }
+
+    Activate::activate();
+
 }
-register_activation_hook(__FILE__, 'elementor_media_validation_plugin_activation');
+register_activation_hook(__FILE__, 'emvp_activation');
 
-
-function elementor_media_validation_plugin_deactivation() {
+function emvp_deactivation() {
 
     register_deactivation_hook(__FILE__, 'emvp_remove_client_role');
     register_deactivation_hook(__FILE__, 'emvp_remove_agency_role');
@@ -71,32 +68,33 @@ function elementor_media_validation_plugin_deactivation() {
         $role->remove_cap('emvp_access_settings');
     }
 }
-register_deactivation_hook(__FILE__, 'elementor_media_validation_plugin_deactivation');
+register_deactivation_hook(__FILE__, 'emvp_deactivation');
 
 /**
  * Register js script that allow media validation
  *
  * @return void
  */
-function enqueue_my_script()
+function handle_admin_scripts()
 {
     wp_register_script('my-script', plugin_dir_url(__FILE__) . 'assets/js/custom.js', array('jquery'), '1.0', true);
     wp_enqueue_script('my-script');
     wp_localize_script('my-script', 'MyAjax', array(
         'ajaxurl' => admin_url('admin-ajax.php'),
-        'security' => wp_create_nonce('my-special-string'),
+        'security' => wp_create_nonce('emvp_plugin_security_string'),
+        'isAdminOrAgency' => isAdminOrAgency(), // Assuming 'agency' is a role you have set up
+        'reloadOnSuccess' => true, // Set this to true if you want to reload the page on successful AJAX call
     ));
 }
-
-add_action('admin_enqueue_scripts', 'enqueue_my_script');
+add_action('admin_enqueue_scripts', 'handle_admin_scripts');
 
 /**
  * Register css style for admin page
  *
  * @return void
  */
-function my_custom_admin_styles()
+function handle_admin_styles()
 {
     wp_enqueue_style('my_custom_styles', plugin_dir_url(__FILE__) . 'assets/css/admin.css');
 }
-add_action('admin_enqueue_scripts', 'my_custom_admin_styles');
+add_action('admin_enqueue_scripts', 'handle_admin_styles');

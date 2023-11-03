@@ -1,6 +1,26 @@
 <?php
 
-define('ACTION_LOG_TABLE_NAME', 'action_log');
+define('ACTION_LOGS_TABLE_NAME', 'emvp_action_logs');
+
+/**
+ * Add logger menu page under the main plugin menu
+ *
+ * @return void
+ */
+function add_menu_logger()
+{
+    if (current_user_can('manage_options') || current_user_can('emvp_access_logger')) {
+        add_submenu_page(
+            'media-validator',
+            'Logger',
+            'Logger',
+            'emvp_access_logger',
+            'logger',
+            'render_page_logger'
+        );
+    }
+}
+add_action('admin_menu', 'add_menu_logger');
 
 if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
@@ -15,16 +35,15 @@ class Action_Log_List_Table extends WP_List_Table {
         $sortable = $this->get_sortable_columns();
         $this->_column_headers = array($columns, $hidden, $sortable);
 
-        $order_by = (!empty($_GET['orderby'])) ? esc_sql($_GET['orderby']) : 'action_time';
+        $order_by = (!empty($_GET['orderby'])) ? esc_sql($_GET['orderby']) : 'action_date';
         $order = (!empty($_GET['order'])) ? esc_sql($_GET['order']) : 'desc';
-        $search = (!empty($_GET['s'])) ? esc_sql($wpdb->esc_like($_GET['s'])) : '';
 
         $media_id = $_GET['media_id'] ?? null;
         // Ici, ajoutez votre propre logique pour récupérer les données de l'historique en fonction de la recherche et du tri
         if ($media_id) {
-            $data = $this->fetch_log_data($order_by, $order, $search, $media_id);
+            $data = $this->fetch_log_data($order_by, $order, $media_id);
         } else {
-            $data = $this->fetch_log_data($order_by, $order, $search);
+            $data = $this->fetch_log_data($order_by, $order);
         }
     
         usort($data, array($this, 'usort_reorder'));
@@ -51,9 +70,8 @@ class Action_Log_List_Table extends WP_List_Table {
             'thumbnail'   => 'Thumbnail', // Cette colonne affichera la vignette
             'media_id'    => 'ID Média', // Ajoutez cette ligne pour afficher l'ID du média
             'user_name'   => 'Utilisateur',
-            'log_key'     => 'Clé',
-            'log_value'   => 'Valeur',
-            'action_time' => 'Date et Heure'
+            'action_type'     => 'Type d\'Action',
+            'action_date' => 'Date et Heure'
         );
         return $columns;
     }
@@ -88,25 +106,30 @@ class Action_Log_List_Table extends WP_List_Table {
 
 
     // This method is used to fetch log data from the database
-    private function fetch_log_data($order_by, $order, $search, $media_id = null) {
+    private function fetch_log_data($order_by, $order, $media_id = null) {
         global $wpdb;
-        $table_name = $wpdb->prefix . ACTION_LOG_TABLE_NAME;
+        $log_table_name = $wpdb->prefix . 'emvp_action_logs';
+        $action_table_name = $wpdb->prefix . 'emvp_media_actions'; // Assuming this is the name of the table where action details are stored
+        $users_table_name = $wpdb->prefix . 'users'; // WordPress default users table
     
-        $sql = "SELECT * FROM $table_name";
+        // Modify the SQL query to join the necessary tables
+        $sql = "SELECT l.*, a.media_id, a.action_type, u.display_name AS user_name
+                FROM $log_table_name l
+                JOIN $action_table_name a ON l.action_id = a.action_id
+                JOIN $users_table_name u ON l.user_id = u.ID";
+    
+        // Add where clauses as necessary
         $where_clauses = [];
-        if ($search) {
-            $where_clauses[] = $wpdb->prepare("log_key LIKE %s OR log_value LIKE %s", "%$search%", "%$search%");
-        }
         if ($media_id) {
-            $where_clauses[] = $wpdb->prepare("media_id = %d", $media_id);
+            $where_clauses[] = $wpdb->prepare("a.media_id = %d", $media_id);
         }
-        if ($where_clauses) {
+        if (!empty($where_clauses)) {
             $sql .= " WHERE " . implode(' AND ', $where_clauses);
         }
         $sql .= " ORDER BY $order_by $order";
     
         return $wpdb->get_results($sql, ARRAY_A);
-    }   
+    }
 
 
     protected function column_thumbnail($item) {
@@ -145,8 +168,7 @@ class Action_Log_List_Table extends WP_List_Table {
     }
 }
 
-// Then in your render_history_page function you would use this class
-function render_logger_page() {
+function render_page_logger() {
     $actionLogListTable = new Action_Log_List_Table();
     $actionLogListTable->prepare_items();
     ?>
@@ -165,72 +187,35 @@ function render_logger_page() {
 <?php
 }
 
-function create_media_log_table()
+
+// register_activation_hook(__FILE__, 'create_table_action_logs');
+
+function insert_log($action_id, $user_id, $action_type)
 {
     global $wpdb;
+    $table_name = $wpdb->prefix . 'emvp_action_logs'; // Make sure this is the correct table name
 
-    $table_name = $wpdb->prefix . ACTION_LOG_TABLE_NAME;
-
-    // Charset
-    $charset_collate = $wpdb->get_charset_collate();
-
-    // Check if table exists
-    if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-
-        // SQL for creating table
-        $sql = "CREATE TABLE $table_name (
-            id mediumint(9) NOT NULL AUTO_INCREMENT,
-            user_id mediumint(9) NOT NULL,
-            media_id mediumint(9),
-            log_key varchar(255) NOT NULL,
-            log_value varchar(255) NOT NULL,
-            action_time datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
-            PRIMARY KEY  (id)
-        ) $charset_collate;";
-
-        // Including the upgrade library for creating/updating tables
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
-        // Creating the table
-        $result = dbDelta($sql);
-        error_log(print_r($result, TRUE));
-        add_option('media_log_db_version', '1.0');
-    }
-}
-
-register_activation_hook(__FILE__, 'create_media_log_table');
-
-
-function log_media_action($media_id, $key, $value)
-{
-    global $wpdb;
-    $table_name = $wpdb->prefix . ACTION_LOG_TABLE_NAME;
-
-    $user_id = get_current_user_id();
-
-    $wpdb->insert(
+    $result = $wpdb->insert(
         $table_name,
         array(
+            'action_id' => $action_id,
             'user_id' => $user_id,
-            'media_id' => $media_id,
-            'log_key' => $key,
-            'log_value' => $value,
+            'action_type' => $action_type,
+            'action_date' => current_time('mysql', 1)
+        ),
+        array(
+            '%d',
+            '%d',
+            '%s',
+            '%s'
         )
     );
-}
 
-
-function add_logger_page()
-{
-    if (current_user_can('manage_options') || current_user_can('emvp_access_logger')) {
-        add_submenu_page(
-            'media-validator',
-            'Logger',
-            'Logger',
-            'emvp_access_logger',
-            'logger',
-            'render_logger_page'
-        );
+    if($result === false) {
+        // Handle error, log it or return false
+        // e.g., error_log($wpdb->last_error);
+        return false;
     }
+
+    return $wpdb->insert_id; // Returns the ID of the inserted row
 }
-add_action('admin_menu', 'add_logger_page');

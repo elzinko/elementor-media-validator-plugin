@@ -29,3 +29,12 @@ function emvp_remove_client_role() {
 function emvp_remove_agency_role() {
     remove_role('emvp_agency');
 }
+
+/** 
+ * register activation and deactivation hooks
+ */
+register_activation_hook(__FILE__, 'emvp_create_client_role');
+register_activation_hook(__FILE__, 'emvp_create_agency_role');
+
+register_deactivation_hook(__FILE__, 'emvp_remove_client_role');
+register_deactivation_hook(__FILE__, 'emvp_remove_agency_role');

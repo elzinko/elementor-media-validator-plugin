@@ -27,28 +27,4 @@ function save_validation_checkbox($post, $attachment)
 }
 add_filter('attachment_fields_to_save', 'save_validation_checkbox', 10, 2);
 
-
-function update_media_validation()
-{
-    // Check the nonce for security
-    check_ajax_referer('my-special-string', 'security');
-
-    $media_id = $_POST['post_id'];
-    $isChecked = $_POST['is_checked'];
-    $comment = $_POST['comment'];
-    $key = 'media_validation';
-
-    // Update the post meta
-    $result = update_post_meta($media_id, $key, $isChecked);
-    // Enregistrez l'action dans le log
-    if ($result) {
-        log_media_action($media_id, $key, $isChecked);
-        echo 'Success';
-    }
-
-    wp_die(); // This is required to terminate immediately and return a proper response
-}
-
-add_action('wp_ajax_update_media_validation', 'update_media_validation');
-
 // MEDIA VALIDATION - END

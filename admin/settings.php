@@ -1,18 +1,11 @@
 <?php
 
 /**
- * Tp use options in code please use :
- * - $options = get_option('myplugin_settings');
- * - $consumer_key = $options['myplugin_consumer_key'];
- * - $consumer_secret = $options['myplugin_consumer_secret'];
- */
-
-/**
  * Add settings page under the main plugin menu
  *
  * @return void
  */
-function add_settings_page()
+function add_menu_settings()
 {
     if (current_user_can('manage_options') || current_user_can('emvp_access_settings')) {
         add_submenu_page(
@@ -21,16 +14,16 @@ function add_settings_page()
             'Settings', // Menu title
             'emvp_access_settings', // Capability
             'settings', // Menu slug
-            'render_settings_page' // Render function
+            'render_page_settings' // Render function
         );
     }
 }
-add_action('admin_menu', 'add_settings_page');
+add_action('admin_menu', 'add_menu_settings');
 
 /**
  * Render the settings page
  */
-function render_settings_page()
+function render_page_settings()
 {
 ?>
 <div class="wrap">
@@ -66,9 +59,9 @@ function render_settings_page()
  *
  * @return void
  */
-function register_mysettings()
+function register_settings()
 {
     register_setting('shutterstock-api-settings', 'consumer_key');
     register_setting('shutterstock-api-settings', 'consumer_secret');
 }
-add_action('admin_init', 'register_mysettings');
+add_action('admin_init', 'register_settings');

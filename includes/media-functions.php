@@ -76,18 +76,37 @@ function build_media_data($filter = 'all')
  * @param [type] $filter
  * @return boolean
  */
-function is_filtered($image, $filter)
-{
-    $media_validation = get_post_meta($image['id_wp'], 'media_validation', true);
-    if ($filter == 'validated' && $media_validation != "1") {
+function is_filtered($image, $filter) {
+    global $wpdb;
+    $image_id = $image['id_wp'];
+    $actions_table_name = $wpdb->prefix . 'emvp_media_actions';
+
+    // Obtenez la dernière action de validation pour l'image spécifiée
+    $query = $wpdb->prepare(
+        "SELECT action_type FROM $actions_table_name 
+         WHERE media_id = %d 
+         ORDER BY action_date DESC LIMIT 1",
+         $image_id
+    );
+
+    // Log pour déboguer la requête SQL
+    error_log('SQL Query: ' . $query);
+
+    $last_action = $wpdb->get_var($query);
+
+    // Si le filtre est 'validated' et que la dernière action n'est pas 'validate', filtrez-le.
+    if ($filter === 'validated' && $last_action !== 'validate') {
         return true;
     }
-    if ($filter == 'not_validated' && $media_validation == "1") {
+    // Si le filtre est 'not_validated' et que la dernière action est 'validate', filtrez-le.
+    if ($filter === 'not_validated' && $last_action === 'validate') {
         return true;
     }
 
+    // Si aucune des conditions ci-dessus n'est remplie, l'image n'est pas filtrée.
     return false;
 }
+
 
 function column_source($image): string
 {
@@ -155,17 +174,36 @@ function column_alt_text($image): string
 
 function column_validation($image_id): string
 {
-    $media_validation = get_post_meta($image_id, 'media_validation', true);
-    $checked = $media_validation=="true"? "checked" : "";
-    $disabled = ($media_validation && in_array( 'emvp_client', (array) wp_get_current_user()->roles ))? "disabled" : "";
+    global $wpdb;
+    $media_actions_table = $wpdb->prefix . 'emvp_media_actions';
+
+    // Query to get the most recent 'validate' or 'unvalidate' action
+    $query = $wpdb->prepare(
+        "SELECT action_type FROM $media_actions_table WHERE media_id = %d AND (action_type = 'validate' OR action_type = 'invalidate') ORDER BY action_date DESC LIMIT 1",
+        $image_id
+    );
+    $last_action_type = $wpdb->get_var($query);
+
+    // Determine the checkbox state based on the last action
+    $checked = $last_action_type === 'validate' ? "checked" : "";
+    
+    // Determine if the checkbox should be disabled
+    $current_user = wp_get_current_user();
+    $disabled = ($last_action_type === 'validate' && !isAdminOrAgency()) ? "disabled" : "";
     
     return sprintf(
         '<input type="checkbox" name="validation" data-id="%s" %s %s />',
         $image_id,
         $checked,
         $disabled
-        );
+    );
 }
+
+
+function isAdminOrAgency() {
+    return current_user_can('manage_options') || current_user_can('emvp_agency');
+}
+
 
 function column_description($image): string
 {

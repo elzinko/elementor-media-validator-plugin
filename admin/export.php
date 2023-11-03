@@ -5,7 +5,7 @@
  *
  * @return void
  */
-function add_export_page()
+function add_menu_export()
 {
     if (current_user_can('manage_options') || current_user_can('emvp_access_export')) {
         add_submenu_page(
@@ -13,12 +13,12 @@ function add_export_page()
             'Export data',
             'Export',
             'emvp_access_export',
-            'export_data',
-            'render_export_page'
+            'export',
+            'render_page_export'
         );
     }
 }
-add_action('admin_menu', 'add_export_page');
+add_action('admin_menu', 'add_menu_export');
 
 
 /**
@@ -27,7 +27,7 @@ add_action('admin_menu', 'add_export_page');
  * @return void
  */
 // Render the export page
-function render_export_page()
+function render_page_export()
 {
 ?>
 <div class="wrap">
