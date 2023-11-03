@@ -27,9 +27,11 @@ function render_page_settings()
 {
 ?>
 <div class="wrap">
-    <h2>API Shutterstock</h2>
+    <h2>Settings</h2>
 
-    <form method="post" action="options.php">
+    No settings for now
+
+    <!-- <form method="post" action="options.php">
         <?php
             settings_fields('shutterstock-api-settings');
             do_settings_sections('shutterstock-api-settings');
@@ -49,7 +51,7 @@ function render_page_settings()
         </table>
 
         <?php submit_button(); ?>
-    </form>
+    </form> -->
 </div>
 <?php
 }
