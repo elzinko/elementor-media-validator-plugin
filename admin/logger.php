@@ -35,8 +35,16 @@ class Action_Log_List_Table extends WP_List_Table {
         $sortable = $this->get_sortable_columns();
         $this->_column_headers = array($columns, $hidden, $sortable);
 
-        $order_by = (!empty($_GET['orderby'])) ? esc_sql($_GET['orderby']) : 'action_date';
-        $order = (!empty($_GET['order'])) ? esc_sql($_GET['order']) : 'desc';
+        // Whitelist ORDER BY: esc_sql does NOT neutralize an identifier/keyword context (SQLi otherwise).
+        $orderby_whitelist = array(
+            'action_date' => 'action_date',
+            'media_id'    => 'a.media_id',
+            'user_name'   => 'user_name',
+            'action_type' => 'a.action_type',
+        );
+        $requested_orderby = !empty($_GET['orderby']) ? sanitize_key($_GET['orderby']) : 'action_date';
+        $order_by = isset($orderby_whitelist[$requested_orderby]) ? $orderby_whitelist[$requested_orderby] : 'action_date';
+        $order = (!empty($_GET['order']) && strtolower($_GET['order']) === 'asc') ? 'ASC' : 'DESC';
 
         $media_id = $_GET['media_id'] ?? null;
         // Ici, ajoutez votre propre logique pour récupérer les données de l'historique en fonction de la recherche et du tri
@@ -175,7 +183,7 @@ function render_page_logger() {
 <div class="wrap">
     <h2>Historique des Actions sur les Médias</h2>
     <form method="get">
-        <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
+        <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page'] ?? '') ?>" />
         <!-- Ajouter un champ pour filtrer par media_id -->
         <input type="text" name="media_id" placeholder="ID Média"
             value="<?php echo esc_attr($_REQUEST['media_id'] ?? '') ?>" />
