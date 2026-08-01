@@ -35,6 +35,7 @@ function render_page_export()
 
     <!-- Formulaire pour déclencher l'export -->
     <form method="post">
+        <?php wp_nonce_field('emvp_export_action', 'emvp_export_nonce'); ?>
         <label for="send_email_checkbox">
             <input type="checkbox" id="send_email_checkbox" name="send_email" value="1">
             Envoyer par e-mail
@@ -62,6 +63,12 @@ function handle_export_action()
     if (empty($_POST['export_action'])) {
         return;
     }
+
+    // Access control: only users allowed to export, and only with a valid nonce (CSRF).
+    if (!current_user_can('emvp_access_export')) {
+        return;
+    }
+    check_admin_referer('emvp_export_action', 'emvp_export_nonce');
 
     // Get export data
     $data = build_media_data();
@@ -100,7 +107,7 @@ function handle_export_action()
     ?>
 <div class="notice notice-success is-dismissible">
     <p><?php _e('Le fichier CSV a été généré avec succès!', 'media-info-tracker'); ?>
-        <a href="<?php echo $file_url; ?>">Télécharger <?php echo $filename; ?></a>
+        <a href="<?php echo esc_url($file_url); ?>">Télécharger <?php echo esc_html($filename); ?></a>
     </p>
 </div>
 <?php
@@ -108,7 +115,10 @@ function handle_export_action()
 
     // If the user wants to send the file by e-mail
     if (isset($_POST['send_email']) && $_POST['send_email'] == 1) {
-        $to = $_POST['email'];
+        $to = sanitize_email(wp_unslash($_POST['email']));
+        if (!is_email($to)) {
+            return;
+        }
         $subject = 'Votre fichier CSV exporté';
         $message = "Veuillez trouver ci-joint le fichier CSV exporté : " . $filename;
         $headers = array();
