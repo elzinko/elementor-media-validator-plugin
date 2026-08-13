@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "auto-changelog": "^2.4.0",
-    "dir-archiver": "^2.1.0"
+    "dir-archiver": "^4.0.0"
   },
   "scripts": {
     "changelog": "auto-changelog -p --template keepachangelog auto-changelog --breaking-pattern 'BREAKING CHANGE:'",
