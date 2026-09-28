@@ -14,7 +14,7 @@
     "url": "git+https://github.com:elzinko/elementor-media-validator-plugin.git"
   },
   "devDependencies": {
-    "auto-changelog": "^2.4.0",
+    "auto-changelog": "^2.7.0",
     "dir-archiver": "^2.1.0"
   },
   "scripts": {
